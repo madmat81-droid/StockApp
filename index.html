@@ -15,9 +15,7 @@
     .navbar{background:#0f121b}
     .card{background:var(--panel); border:1px solid var(--border); border-radius:16px}
     .metric{font-size:2.6rem; font-weight:700; letter-spacing:.5px}
-    .form-control, .form-select{
-      background:#0e1220; color:#e8eaee; border-color:#1e2432
-    }
+    .form-control, .form-select{background:#0e1220; color:#e8eaee; border-color:#1e2432}
     .form-control:focus{box-shadow:none; border-color:var(--primary)}
     .btn-primary{background:var(--primary); border-color:var(--primary)}
     .btn-success{background:var(--accent); border-color:var(--accent)}
@@ -33,7 +31,7 @@
     <a class="navbar-brand fw-semibold" href="#"><i class="bi bi-box-seam me-2"></i>StockApp</a>
     <div class="ms-auto d-flex gap-2 align-items-center">
       <span id="userInfo" class="badge rounded-pill badge-role d-none"></span>
-      <button id="btnLogout" class="btn btn-sm btn-outline-light d-none">Logout</button>
+      <button id="btnLogout" class="btn btn-sm btn-outline-light d-none" type="button">Logout</button>
     </div>
   </div>
 </nav>
@@ -54,9 +52,11 @@
           <input id="password" type="password" class="form-control" autocomplete="current-password" placeholder="••••••" />
         </div>
         <div class="col-md-4">
-          <button id="btnLogin" class="btn btn-primary w-100"><i class="bi bi-box-arrow-in-right me-1"></i>Entra</button>
+          <button id="btnLogin" class="btn btn-primary w-100" type="button">
+            <i class="bi bi-box-arrow-in-right me-1"></i>Entra
+          </button>
           <small class="muted d-block mt-2">
-            Demo:<br>
+            Utenti creati automaticamente al primo avvio:<br>
             Admin → <code>admin@example.com / admin</code><br>
             User  → <code>user1@example.com / user</code>
           </small>
@@ -99,19 +99,20 @@
         <input id="search" class="form-control" placeholder="Cerca Finis / Complete / Descrizione / Note" style="max-width:380px" />
       </div>
 
-      <!-- Admin: create -->
-      <div id="adminBar" class="mb-3 d-none">
+      <!-- Add form (per tutti: Admin e User) -->
+      <div id="addBar" class="mb-3">
         <div class="row g-2">
           <div class="col-lg-2"><input id="newFinis" class="form-control" placeholder="Finis Code" /></div>
           <div class="col-lg-2"><input id="newComplete" class="form-control" placeholder="Complete Code" /></div>
           <div class="col-lg-3"><input id="newDesc" class="form-control" placeholder="Descrizione" /></div>
           <div class="col-lg-3"><input id="newNote" class="form-control" placeholder="Note" /></div>
-          <div class="col-lg-2 d-grid"><button id="btnAdd" class="btn btn-success"><i class="bi bi-plus-lg me-1"></i>Aggiungi</button></div>
+          <div class="col-lg-2 d-grid"><button id="btnAdd" class="btn btn-success" type="button"><i class="bi bi-plus-lg me-1"></i>Aggiungi</button></div>
         </div>
+        <div class="muted small mt-1">I nuovi record saranno di proprietà: <span id="ownerHint"></span></div>
       </div>
 
       <div class="table-responsive">
-        <table class="table table-dark table-striped align-middle">
+        <table class="table table-dark table-striped align-middle mb-2">
           <thead>
             <tr>
               <th>Finis Code</th>
@@ -127,60 +128,107 @@
       </div>
 
       <div class="d-flex gap-2">
-        <button id="btnExport" class="btn btn-outline-light"><i class="bi bi-download me-1"></i>Esporta JSON</button>
+        <button id="btnExport" class="btn btn-outline-light" type="button"><i class="bi bi-download me-1"></i>Esporta JSON</button>
         <label class="btn btn-outline-light mb-0">
           <i class="bi bi-upload me-1"></i>Importa JSON <input id="fileImport" type="file" accept="application/json" hidden>
         </label>
       </div>
-      <div class="muted small mt-2">I dati sono salvati nel tuo browser (localStorage). Ruoli/visibilità si basano sull’indirizzo email.</div>
+      <div class="muted small mt-2">Dati salvati nel browser (localStorage). Visibilità in base al proprietario (owner=email).</div>
     </div>
   </div>
+
+  <!-- USERS (ADMIN ONLY) -->
+  <div id="cardUsers" class="card mt-3 d-none">
+    <div class="card-body">
+      <div class="d-flex align-items-center mb-3 gap-2">
+        <h3 class="h5 me-auto mb-0">Gestione Utenti</h3>
+        <input id="uSearch" class="form-control" placeholder="Cerca email" style="max-width:320px" />
+      </div>
+
+      <div class="row g-2 mb-3">
+        <div class="col-lg-4"><input id="uEmail" class="form-control" placeholder="email@dominio.it" /></div>
+        <div class="col-lg-3"><input id="uPassword" class="form-control" placeholder="password" /></div>
+        <div class="col-lg-3">
+          <select id="uRole" class="form-select">
+            <option value="user">User</option>
+            <option value="admin">Admin</option>
+          </select>
+        </div>
+        <div class="col-lg-2 d-grid"><button id="btnAddUser" class="btn btn-success" type="button"><i class="bi bi-person-plus me-1"></i>Aggiungi</button></div>
+      </div>
+
+      <div class="table-responsive">
+        <table class="table table-dark table-striped align-middle">
+          <thead><tr><th>Email</th><th>Ruolo</th><th class="text-end">Azioni</th></tr></thead>
+          <tbody id="uBody"></tbody>
+        </table>
+      </div>
+      <div class="muted small">⚠️ Demo: utenti salvati in localStorage (non sicuro per produzione).</div>
+    </div>
+  </div>
+
 </main>
 
 <script type="module">
 /* =========================
-   STATE & STORAGE (scoped)
+   KEYS & STATE
    ========================= */
-const LS_KEY = 'stockapp.items.v2';
-let state = {
-  user: null,    // {email, role}
-  items: []      // [{id, owner, finis, complete, desc, note, qty}]
-};
-const uid = () => Math.random().toString(36).slice(2,10);
+const LS_ITEMS = 'stockapp.items.v3';
+const LS_USERS = 'stockapp.users.v1';
 
-function loadLocal(){ try{ state.items = JSON.parse(localStorage.getItem(LS_KEY)||'[]'); }catch{ state.items=[]; } }
-function saveLocal(){ localStorage.setItem(LS_KEY, JSON.stringify(state.items)); }
+let state = {
+  user: null,  // {email, role}
+  items: [],   // [{id, owner, finis, complete, desc, note, qty}]
+  users: []    // [{email, pass, role}]
+};
+
+const uid = () => Math.random().toString(36).slice(2,10);
+const byEmail = (e) => (e||'').trim().toLowerCase();
 
 /* =========================
-   AUTH (demo)
+   STORAGE
+   ========================= */
+function loadItems(){ try{ state.items = JSON.parse(localStorage.getItem(LS_ITEMS)||'[]'); }catch{ state.items=[]; } }
+function saveItems(){ localStorage.setItem(LS_ITEMS, JSON.stringify(state.items)); }
+
+function loadUsers(){ try{ state.users = JSON.parse(localStorage.getItem(LS_USERS)||'[]'); }catch{ state.users=[]; } }
+function saveUsers(){ localStorage.setItem(LS_USERS, JSON.stringify(state.users)); }
+
+// seed admin + user1
+function ensureSeedUsers(){
+  loadUsers();
+  if(state.users.length===0){
+    state.users = [
+      { email: 'admin@example.com', pass: 'admin', role: 'admin' },
+      { email: 'user1@example.com', pass: 'user',  role: 'user'  },
+    ];
+    saveUsers();
+  }
+}
+
+/* =========================
+   AUTH
    ========================= */
 function login(email, password){
-  email = (email||'').trim().toLowerCase();
-  const pass = (password||'').trim();
-
-  // DEMO users
-  const users = {
-    'admin@example.com': { role:'admin', pass:'admin' },
-    'user1@example.com': { role:'user',  pass:'user'  },
-  };
-  const u = users[email];
-  if(!u || u.pass !== pass){ alert('Credenziali non valide'); return; }
-
-  state.user = { email, role:u.role };
-  loadLocal();
+  ensureSeedUsers();
+  const e = byEmail(email);
+  const p = (password||'').trim();
+  const u = state.users.find(u => byEmail(u.email)===e);
+  if(!u || u.pass!==p){ alert('Credenziali non valide'); return; }
+  state.user = { email: u.email, role: u.role };
+  loadItems();
   render();
 }
 function logout(){ state.user=null; render(); }
 
 /* =========================
-   FILTER & METRICS
+   QUERIES & METRICS
    ========================= */
 function visibleItems(){
-  if(!state.user) return [];
   const q = document.getElementById('search').value.trim().toLowerCase();
   let arr = state.items;
-  if(state.user.role !== 'admin'){
-    arr = arr.filter(r => (r.owner||'').toLowerCase() === state.user.email);
+  if(state.user.role!=='admin'){
+    arr = arr.filter(r => byEmail(r.owner) === byEmail(state.user.email));
   }
   if(q){
     arr = arr.filter(r =>
@@ -193,9 +241,10 @@ function visibleItems(){
   return arr;
 }
 function metrics(arr){
-  const totalItems = arr.length;
-  const totalQty = arr.reduce((a,b)=>a + Number(b.qty||0), 0);
-  return { totalItems, totalQty };
+  return {
+    totalItems: arr.length,
+    totalQty: arr.reduce((a,b)=>a + Math.max(0, Number(b.qty||0)), 0)
+  };
 }
 
 /* =========================
@@ -205,15 +254,15 @@ function render(){
   const cardAuth = document.getElementById('cardAuth');
   const rowDash  = document.getElementById('rowDash');
   const cardStock= document.getElementById('cardStock');
+  const cardUsers= document.getElementById('cardUsers');
   const userInfo = document.getElementById('userInfo');
   const btnLogout= document.getElementById('btnLogout');
-  const adminBar = document.getElementById('adminBar');
-  const tbody    = document.getElementById('tbody');
 
   if(!state.user){
     cardAuth.classList.remove('d-none');
     rowDash.classList.add('d-none');
     cardStock.classList.add('d-none');
+    cardUsers.classList.add('d-none');
     userInfo.classList.add('d-none');
     btnLogout.classList.add('d-none');
     return;
@@ -225,132 +274,213 @@ function render(){
   btnLogout.classList.remove('d-none');
 
   userInfo.textContent = `${state.user.email} • ${state.user.role}`;
+  document.getElementById('ownerHint').textContent = state.user.email;
 
+  // items
   const list = visibleItems();
   const { totalItems, totalQty } = metrics(list);
   document.getElementById('metricItems').textContent = totalItems;
   document.getElementById('metricQty').textContent   = totalQty;
 
+  const tbody = document.getElementById('tbody');
   tbody.innerHTML = '';
   for(const it of list){
     const tr = document.createElement('tr');
     tr.dataset.id = it.id;
     tr.innerHTML = `
-      <td>${escapeHTML(it.finis||'')}</td>
-      <td>${escapeHTML(it.complete||'')}</td>
-      <td>${escapeHTML(it.desc||'')}</td>
-      <td>${escapeHTML(it.note||'')}</td>
+      <td>${esc(it.finis)}</td>
+      <td>${esc(it.complete)}</td>
+      <td>${esc(it.desc)}</td>
+      <td>${esc(it.note)}</td>
       <td class="text-end">${Number(it.qty||0)}</td>
       <td class="text-end">
         <div class="d-inline-flex align-items-center gap-1">
           <input type="number" min="1" step="1" value="1"
                  class="form-control form-control-sm w-auto" data-qty>
-          <button class="btn btn-sm btn-primary" data-action="in"><i class="bi bi-plus-lg me-1"></i>Carico</button>
-          <button class="btn btn-sm btn-outline-light" data-action="out"><i class="bi bi-dash-lg me-1"></i>Scarico</button>
+          <button type="button" class="btn btn-sm btn-primary" data-action="in"  data-id="${it.id}">
+            <i class="bi bi-plus-lg me-1"></i>Carico
+          </button>
+          <button type="button" class="btn btn-sm btn-outline-light" data-action="out" data-id="${it.id}">
+            <i class="bi bi-dash-lg me-1"></i>Scarico
+          </button>
         </div>
       </td>`;
     tbody.appendChild(tr);
   }
-  adminBar.classList.toggle('d-none', state.user.role!=='admin');
+
+  // users (admin only)
+  if(state.user.role==='admin'){
+    cardUsers.classList.remove('d-none');
+    renderUsers();
+  } else {
+    cardUsers.classList.add('d-none');
+  }
 }
-function escapeHTML(s){ return (s||'').replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m])); }
+
+function renderUsers(){
+  loadUsers();
+  const q = document.getElementById('uSearch').value.trim().toLowerCase();
+  const rows = state.users
+    .filter(u => !q || u.email.toLowerCase().includes(q))
+    .sort((a,b)=>a.email.localeCompare(b.email));
+
+  const uBody = document.getElementById('uBody');
+  uBody.innerHTML = '';
+  for(const u of rows){
+    const tr = document.createElement('tr');
+    tr.dataset.email = u.email;
+    tr.innerHTML = `
+      <td>${esc(u.email)}</td>
+      <td>
+        <select class="form-select form-select-sm w-auto d-inline" data-urole="${esc(u.email)}">
+          <option value="user"  ${u.role==='user'?'selected':''}>User</option>
+          <option value="admin" ${u.role==='admin'?'selected':''}>Admin</option>
+        </select>
+      </td>
+      <td class="text-end">
+        <button class="btn btn-sm btn-outline-light me-1" data-action="reset" data-email="${esc(u.email)}">
+          <i class="bi bi-key"></i> Reset PW
+        </button>
+        <button class="btn btn-sm btn-outline-danger" data-action="del" data-email="${esc(u.email)}">
+          <i class="bi bi-trash"></i> Elimina
+        </button>
+      </td>`;
+    uBody.appendChild(tr);
+  }
+}
 
 /* =========================
-   ACTIONS
+   HELPERS & ACTIONS
    ========================= */
+function esc(s){ return (s??'').toString().replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m])); }
+
 function addItem(){
   const finis    = document.getElementById('newFinis').value.trim();
   const complete = document.getElementById('newComplete').value.trim();
   const desc     = document.getElementById('newDesc').value.trim();
   const note     = document.getElementById('newNote').value.trim();
-  if(!finis && !complete){ return alert('Inserisci almeno Finis o Complete Code'); }
-  const rec = {
-    id: uid(),
-    owner: state.user.email,     // chi crea il record
-    finis, complete, desc, note,
-    qty: 0
-  };
-  state.items.push(rec);
-  saveLocal();
-  // pulizia form
-  ['newFinis','newComplete','newDesc','newNote'].forEach(id => document.getElementById(id).value='');
+  if(!finis && !complete){ alert('Inserisci almeno Finis o Complete Code'); return; }
+  const rec = { id: uid(), owner: state.user.email, finis, complete, desc, note, qty: 0 };
+  state.items.push(rec); saveItems();
+  ['newFinis','newComplete','newDesc','newNote'].forEach(id=>document.getElementById(id).value='');
   render();
 }
 
 function moveItem(id, delta){
-  const idx = state.items.findIndex(r => r.id===id);
-  if(idx<0) return;
-  // autorizzazione: user può modificare solo i propri record
-  const isOwner = (state.items[idx].owner||'').toLowerCase() === state.user.email;
-  if(state.user.role!=='admin' && !isOwner){
-    alert('Non puoi modificare un record non tuo.'); return;
-  }
-  const q = Number(state.items[idx].qty||0) + Number(delta);
-  state.items[idx].qty = Math.max(0, q); // MAI negativo
-  saveLocal();
-  render();
+  const i = state.items.findIndex(r=>r.id===id);
+  if(i<0) return;
+  const isOwner = byEmail(state.items[i].owner)===byEmail(state.user.email);
+  if(state.user.role!=='admin' && !isOwner){ alert('Puoi modificare solo i tuoi record.'); return; }
+  const newQty = Math.max(0, Number(state.items[i].qty||0) + Number(delta||0));
+  state.items[i].qty = newQty; saveItems(); render();
 }
 
-/* =========================
-   EXPORT / IMPORT
-   ========================= */
 function exportJSON(){
   const blob = new Blob([JSON.stringify(state.items, null, 2)], {type:'application/json'});
-  const a = document.createElement('a');
-  a.href = URL.createObjectURL(blob);
-  a.download = 'stockapp_export.json';
-  a.click(); URL.revokeObjectURL(a.href);
+  const a = document.createElement('a'); a.href = URL.createObjectURL(blob);
+  a.download = 'stockapp_export.json'; a.click(); URL.revokeObjectURL(a.href);
 }
 function importJSON(file){
-  const reader = new FileReader();
-  reader.onload = e => {
+  const rd = new FileReader();
+  rd.onload = e=>{
     try{
       const arr = JSON.parse(e.target.result);
       if(!Array.isArray(arr)) throw new Error('Formato non valido');
-      // opzionale: normalizza campi
-      state.items = arr.map(x => ({
+      state.items = arr.map(x=>({
         id: x.id || uid(),
-        owner: (x.owner||'').toLowerCase(),
+        owner: byEmail(x.owner||''),
         finis: x.finis||'',
         complete: x.complete||'',
         desc: x.desc||x.description||'',
         note: x.note||'',
         qty: Math.max(0, Number(x.qty||0))
       }));
-      saveLocal(); render();
+      saveItems(); render();
     }catch{ alert('JSON non valido'); }
   };
-  reader.readAsText(file);
+  rd.readAsText(file);
+}
+
+/* === Users (admin) === */
+function addUser(){
+  ensureSeedUsers(); loadUsers();
+  const email = byEmail(document.getElementById('uEmail').value);
+  const pass  = document.getElementById('uPassword').value.trim();
+  const role  = document.getElementById('uRole').value;
+  if(!email || !pass) return alert('Email e password richieste');
+  if(state.users.some(u=>byEmail(u.email)===email)){ alert('Utente già presente'); return; }
+  state.users.push({ email, pass, role }); saveUsers();
+  document.getElementById('uEmail').value=''; document.getElementById('uPassword').value=''; document.getElementById('uRole').value='user';
+  renderUsers();
+}
+function setUserRole(email, role){
+  loadUsers();
+  const u = state.users.find(u=>byEmail(u.email)===byEmail(email));
+  if(!u) return; u.role = role; saveUsers(); if(byEmail(state.user.email)===byEmail(email)) state.user.role=role; renderUsers(); render();
+}
+function resetPassword(email){
+  loadUsers();
+  const u = state.users.find(u=>byEmail(u.email)===byEmail(email));
+  if(!u) return;
+  const pw = prompt(`Nuova password per ${u.email}:`, '');
+  if(pw===null) return;
+  const p = pw.trim(); if(!p) return alert('Password vuota');
+  u.pass = p; saveUsers(); alert('Password aggiornata.');
+}
+function deleteUser(email){
+  if(!confirm(`Eliminare l'utente ${email}?`)) return;
+  loadUsers();
+  state.users = state.users.filter(u=>byEmail(u.email)!==byEmail(email));
+  saveUsers();
+  if(byEmail(state.user.email)===byEmail(email)){ state.user=null; }
+  renderUsers(); render();
 }
 
 /* =========================
-   WIREUP (no inline onclick)
+   BOOT & EVENTS
    ========================= */
-loadLocal(); render();
+ensureSeedUsers(); loadItems(); render();
 
 document.getElementById('btnLogin').addEventListener('click', ()=>login(
-  document.getElementById('email').value,
-  document.getElementById('password').value
+  document.getElementById('email').value, document.getElementById('password').value
 ));
 document.getElementById('btnLogout').addEventListener('click', logout);
 
 document.getElementById('search').addEventListener('input', render);
+
 document.getElementById('btnAdd').addEventListener('click', addItem);
 document.getElementById('btnExport').addEventListener('click', exportJSON);
 document.getElementById('fileImport').addEventListener('change', e=>{
   if(e.target.files[0]) importJSON(e.target.files[0]); e.target.value='';
 });
 
-// Event delegation per i pulsanti della tabella
+// Movimento qty: event delegation robusto
 document.getElementById('tbody').addEventListener('click', (ev)=>{
   const btn = ev.target.closest('button[data-action]');
   if(!btn) return;
-  const tr = ev.target.closest('tr');
-  const id = tr?.dataset?.id;
+  const tr = btn.closest('tr');
+  const id = btn.dataset.id || tr?.dataset?.id;
   const qtyInput = tr.querySelector('[data-qty]');
-  const val = Math.max(1, Number(qtyInput?.value||1)); // sempre >=1
+  let val = Number(qtyInput?.value || 1);
+  if(!Number.isFinite(val) || val < 1) val = 1; // sempre positivo
   if(btn.dataset.action==='in')  moveItem(id, +val);
-  if(btn.dataset.action==='out') moveItem(id, -val);   // clamp a 0 nella funzione
+  if(btn.dataset.action==='out') moveItem(id, -val); // clamp a 0 dentro moveItem
+});
+
+// Users (admin)
+document.getElementById('btnAddUser').addEventListener('click', addUser);
+document.getElementById('uSearch').addEventListener('input', renderUsers);
+document.getElementById('uBody').addEventListener('change', (e)=>{
+  const sel = e.target.closest('select[data-urole]');
+  if(!sel) return;
+  setUserRole(sel.getAttribute('data-urole'), sel.value);
+});
+document.getElementById('uBody').addEventListener('click', (e)=>{
+  const b = e.target.closest('button[data-action]');
+  if(!b) return;
+  const email = b.getAttribute('data-email');
+  if(b.dataset.action==='del')  deleteUser(email);
+  if(b.dataset.action==='reset') resetPassword(email);
 });
 </script>
 </body>
