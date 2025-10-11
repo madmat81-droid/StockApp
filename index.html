@@ -9,7 +9,7 @@
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.3/dist/chart.umd.min.js"></script>
   <link rel="icon" href="data:," />
   <style>
-    :root{--bg:#0a0c10;--panel:#131622;--muted:#9aa3af;--border:#1f2330;--primary:#3b82f6;--accent:#10b981}
+    :root{--bg:#0a0c10;--panel:#131622;--muted:#9aa3af;--border:#1f2330;--primary:#3b82f6;--accent:#10b981;--ford:#003DA5}
     body{background:var(--bg);color:#e8eaee}
     .navbar{background:#0f121b}
     .card{background:var(--panel);border:1px solid var(--border);border-radius:16px}
@@ -26,16 +26,25 @@
 
     /* ---- Modern login split ---- */
     body.auth-mode{background:#000}
-    body.auth-mode .navbar{background:transparent}
+    /* nascondi navbar nella pagina di login */
+    body.auth-mode nav{display:none}
+
+    /* header brand solo per login */
+    .brand-header{position:fixed;top:16px;left:20px;z-index:1050;display:flex;align-items:center;gap:.5rem;color:var(--ford);font-weight:700}
+    .brand-header i{font-size:1.25rem}
 
     /* wrapper full‑bleed */
+    #page-auth{padding:0;margin:0}
+    .login-split{width:100vw;margin-left:calc(50% - 50vw);display:grid;grid-template-columns:1fr 1fr;min-height:100vh}
+
     #page-auth{padding:0;margin:0}
     .login-split{width:100vw;margin-left:calc(50% - 50vw);display:grid;grid-template-columns:1fr 1fr;min-height:calc(100vh - 56px)}
 
     /* left: white panel */
     .login-left{background:#ffffff;color:#0b1220;display:flex;align-items:center;justify-content:center;padding:48px}
     .login-box{width:100%;max-width:520px}
-    .brand-logo{max-width:280px;height:auto;margin-bottom:24px}
+    .brand-logo{max-width:280px;height:auto;margin-bottom:24px;display:block;margin-left:auto;margin-right:auto}
+
     .login-left .form-control,.login-left .form-select{background:#ffffff;color:#0b1220;border-color:#d8dee9}
     .login-left .form-control:focus{border-color:#3b82f6;box-shadow:0 0 0 .25rem rgba(59,130,246,.15)}
 
@@ -77,6 +86,7 @@
 <main class="container py-4">
   <!-- LOGIN -->
   <section id="page-auth" class="bg-transparent">
+    <a class="brand-header" href="#"><i class="bi bi-box-seam"></i><span>StockApp</span></a>
     <div class="login-split">
       <!-- LEFT: white panel with logo + form -->
       <div class="login-left">
