@@ -29,21 +29,18 @@
     /* nascondi navbar nella pagina di login */
     body.auth-mode nav{display:none}
 
-    /* header brand solo per login */
-    .brand-header{position:fixed;top:16px;left:20px;z-index:1050;display:flex;align-items:center;gap:.5rem;color:var(--ford);font-weight:700}
-    .brand-header i{font-size:1.25rem}
-
     /* wrapper full‑bleed */
     #page-auth{padding:0;margin:0}
     .login-split{width:100vw;margin-left:calc(50% - 50vw);display:grid;grid-template-columns:1fr 1fr;min-height:100vh}
 
     #page-auth{padding:0;margin:0}
-    .login-split{width:100vw;margin-left:calc(50% - 50vw);display:grid;grid-template-columns:1fr 1fr;min-height:calc(100vh - 56px)}
+    .login-split{width:100vw;margin-left:calc(50% - 50vw);display:grid;grid-template-columns:1fr 1fr;min-height:100vh}
 
     /* left: white panel */
     .login-left{background:#ffffff;color:#0b1220;display:flex;align-items:center;justify-content:center;padding:48px}
     .login-box{width:100%;max-width:520px}
-    .brand-logo{max-width:280px;height:auto;margin-bottom:24px;display:block;margin-left:auto;margin-right:auto}
+    .brand-logo{max-width:340px;height:auto;margin:8px auto 24px auto;display:block}
+    .app-title{font-weight:800;color:var(--ford);text-align:center;line-height:1.1;font-size:clamp(32px,6vw,72px); margin-bottom:8px;} 
 
     .login-left .form-control,.login-left .form-select{background:#ffffff;color:#0b1220;border-color:#d8dee9}
     .login-left .form-control:focus{border-color:#3b82f6;box-shadow:0 0 0 .25rem rgba(59,130,246,.15)}
@@ -86,12 +83,15 @@
 <main class="container py-4">
   <!-- LOGIN -->
   <section id="page-auth" class="bg-transparent">
-    <a class="brand-header" href="#"><i class="bi bi-box-seam"></i><span>StockApp</span></a>
+    
     <div class="login-split">
       <!-- LEFT: white panel with logo + form -->
       <div class="login-left">
         <div class="login-box">
-          <img src="assets/logo.png" alt="Logo aziendale" class="brand-logo"/>
+          <div class="text-center">
+            <div class="app-title">StockApp</div>
+            <img src="assets/logo.png" alt="Logo aziendale" class="brand-logo"/>
+          </div>
           <div class="card border-0 shadow-sm" style="background:#ffffff;color:#0b1220">
             <div class="card-body p-4 p-md-5">
               <h1 class="h4 mb-3">Accedi</h1>
