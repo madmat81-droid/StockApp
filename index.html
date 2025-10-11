@@ -214,13 +214,14 @@
   async function ensureProfile(uid, email){
     const ref = doc(db, 'profiles', uid);
     const snap = await getDoc(ref);
-    if(!snap.exists()){
-      const data = { email, role:'user', dealer:'', createdAt: serverTimestamp() };
+    if (!snap.exists()) {
+      const data = { email, role: 'user', dealer: '', createdAt: serverTimestamp() };
       await setDoc(ref, data);
       return data;
     }
     const data = snap.data();
-    if (data.dealer === undefined) { await updateDoc(ref, { dealer: '' }); data.dealer=''; }
+    // niente update automatico se manca 'dealer' (evita permessi insufficienti)
+    if (data.dealer === undefined) data.dealer = '';
     return data;
   }
 
