@@ -24,21 +24,31 @@
     a.nav-link{color:#bfc6d4}
     a.nav-link.active{color:#fff}
 
-    /* ---- Modern login ---- */
+    /* ---- Modern login split ---- */
     body.auth-mode{background:#000}
     body.auth-mode .navbar{background:transparent}
-    .login-hero{
-      position:relative;min-height:calc(100vh - 56px); /* minus navbar */
-      display:flex;align-items:center;justify-content:center;
-      background: radial-gradient(ellipse at 20% 10%, rgba(0,0,0,.75), rgba(0,0,0,.95)),
-                  url('assets/bg.jpg') center/cover no-repeat fixed;
-      padding:48px 12px;
+
+    /* wrapper full‑bleed */
+    #page-auth{padding:0;margin:0}
+    .login-split{width:100vw;margin-left:calc(50% - 50vw);display:grid;grid-template-columns:1fr 1fr;min-height:calc(100vh - 56px)}
+
+    /* left: white panel */
+    .login-left{background:#ffffff;color:#0b1220;display:flex;align-items:center;justify-content:center;padding:48px}
+    .login-box{width:100%;max-width:520px}
+    .brand-logo{max-width:280px;height:auto;margin-bottom:24px}
+    .login-left .form-control,.login-left .form-select{background:#ffffff;color:#0b1220;border-color:#d8dee9}
+    .login-left .form-control:focus{border-color:#3b82f6;box-shadow:0 0 0 .25rem rgba(59,130,246,.15)}
+
+    /* right: image */
+    .login-right{background:radial-gradient(ellipse at 20% 10%, rgba(0,0,0,.35), rgba(0,0,0,.65)), url('assets/bg.jpg') center/cover no-repeat}
+
+    /* responsiveness */
+    @media (max-width: 992px){
+      .login-split{grid-template-columns:1fr}
+      .login-right{min-height:40vh}
     }
-    .login-card{
-      width:100%;max-width:520px;border-radius:20px;border:1px solid rgba(255,255,255,.08);
-      background:rgba(19,22,34,.7);backdrop-filter: blur(10px);
-      box-shadow:0 10px 40px rgba(0,0,0,.45);
-    }
+
+    /* keep the rest of the site */
     .login-logo{height:48px;object-fit:contain}
     .text-shadow{ text-shadow:0 2px 16px rgba(0,0,0,.75); }
   </style>
@@ -66,34 +76,35 @@
 
 <main class="container py-4">
   <!-- LOGIN -->
-  <section id="page-auth" class="p-0 mb-0 border-0 bg-transparent">
-    <div class="login-hero">
-      <div class="card login-card">
-        <div class="card-body p-4 p-md-5">
-          <div class="d-flex align-items-center gap-3 mb-4">
-            <img src="assets/logo.png" alt="Logo" class="login-logo"/>
-            <div class="">
-              <h1 class="h4 mb-1">Benvenuto</h1>
-              <div class="muted">Accedi al tuo account</div>
-            </div>
-          </div>
-
-          <div class="row g-3">
-            <div class="col-12">
-              <label class="form-label">Email</label>
-              <input id="email" class="form-control" autocomplete="username" placeholder="you@example.com" />
-            </div>
-            <div class="col-12">
-              <label class="form-label">Password</label>
-              <input id="password" type="password" class="form-control" autocomplete="current-password" placeholder="••••••" />
-            </div>
-            <div class="col-12 d-grid">
-              <button id="btnLogin" class="btn btn-primary btn-lg" type="button"><i class="bi bi-box-arrow-in-right me-1"></i>Entra</button>
-              <div id="authError" class="alert alert-danger mt-3 d-none" role="alert"></div>
+  <section id="page-auth" class="bg-transparent">
+    <div class="login-split">
+      <!-- LEFT: white panel with logo + form -->
+      <div class="login-left">
+        <div class="login-box">
+          <img src="assets/logo.png" alt="Logo aziendale" class="brand-logo"/>
+          <div class="card border-0 shadow-sm" style="background:#ffffff;color:#0b1220">
+            <div class="card-body p-4 p-md-5">
+              <h1 class="h4 mb-3">Accedi</h1>
+              <div class="row g-3">
+                <div class="col-12">
+                  <label class="form-label">Email</label>
+                  <input id="email" class="form-control" autocomplete="username" placeholder="you@example.com" />
+                </div>
+                <div class="col-12">
+                  <label class="form-label">Password</label>
+                  <input id="password" type="password" class="form-control" autocomplete="current-password" placeholder="••••••" />
+                </div>
+                <div class="col-12 d-grid">
+                  <button id="btnLogin" class="btn btn-primary btn-lg" type="button"><i class="bi bi-box-arrow-in-right me-1"></i>Entra</button>
+                  <div id="authError" class="alert alert-danger mt-3 d-none" role="alert"></div>
+                </div>
+              </div>
             </div>
           </div>
         </div>
       </div>
+      <!-- RIGHT: background image -->
+      <div class="login-right d-none d-lg-block"></div>
     </div>
   </section>
 
