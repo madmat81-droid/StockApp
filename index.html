@@ -204,7 +204,7 @@ let charts = { top:null, owner:null };
 
 const $ = (s)=>document.querySelector(s);
 const $$= (s)=>document.querySelectorAll(s);
-const esc = s => (s??'').toString().replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]}));
+const esc = s => (s??'').toString().replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
 const byEmail = e => (e||'').trim().toLowerCase();
 
 /* --- Auth + profili --- */
@@ -427,3 +427,4 @@ document.getElementById('page-auth').classList.remove('d-none');
 </script>
 </body>
 </html>
+
