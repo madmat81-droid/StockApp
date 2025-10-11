@@ -185,7 +185,7 @@
   /* Firebase SDK */
   import { initializeApp, getApp, deleteApp } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-app.js";
   import { getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged, createUserWithEmailAndPassword, sendPasswordResetEmail } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-auth.js";
-  import { getFirestore, collection, doc, getDoc, getDocs, setDoc, updateDoc, addDoc, query, where, orderBy, runTransaction, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-firestore.js";
+  import { getFirestore, collection, doc, getDoc, getDocs, setDoc, updateDoc, addDoc, query, where, orderBy, runTransaction, serverTimestamp, deleteDoc } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-firestore.js";
 
   /* Config del tuo progetto */
   const firebaseConfig = {
@@ -210,6 +210,13 @@
   const esc = s => (s ?? '').toString().replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;','\'':'&#39;'}[m]));
   const byEmail = e => (e||'').trim().toLowerCase();
 
+  // chiave univoca PER OWNER (uid + finis + complete)
+  function makeKey(finis, complete){
+    const f=(finis||'').trim().toLowerCase();
+    const c=(complete||'').trim().toLowerCase();
+    return `${currentUser.uid}__${f}__${c}`;
+  }
+
   /* Auth + profili */
   async function ensureProfile(uid, email){
     const ref = doc(db, 'profiles', uid);
@@ -220,7 +227,6 @@
       return data;
     }
     const data = snap.data();
-    // niente update automatico se manca 'dealer' (evita permessi insufficienti)
     if (data.dealer === undefined) data.dealer = '';
     return data;
   }
@@ -269,14 +275,26 @@
     itemsCache = snap.docs.map(d=>({ id:d.id, ...d.data() }));
     renderStock(); renderStats();
   }
+
   async function addItem(){
-    const finis=$('#newFinis').value.trim();
-    const complete=$('#newComplete').value.trim();
-    const desc=$('#newDesc').value.trim();
-    const note=$('#newNote').value.trim();
+    const finis   = $('#newFinis').value.trim();
+    const complete= $('#newComplete').value.trim();
+    const desc    = $('#newDesc').value.trim();
+    const note    = $('#newNote').value.trim();
+
     if(!finis && !complete){ alert('Inserisci almeno Finis o Complete'); return; }
+
+    const key = makeKey(finis, complete);
     try{
-      await addDoc(collection(db,'items'), {
+      // blocco duplicati per owner
+      const ref = doc(db, 'items', key);
+      const snap = await getDoc(ref);
+      if(snap.exists()){
+        alert('Esiste già un tuo record con lo stesso Finis e Complete.');
+        return;
+      }
+      await setDoc(ref, {
+        key,
         ownerUid: currentUser.uid,
         ownerEmail: currentUser.email,
         finis, complete, desc, note,
@@ -287,9 +305,10 @@
       await fetchItems();
     }catch(err){
       console.error('ADD ITEM ERROR:', err.code, err.message);
-      alert(`Errore nel salvataggio: ${err.code}`);
+      alert(`Errore nel salvataggio: ${err.code || err.message}`);
     }
   }
+
   async function moveItem(id, delta){
     const ref = doc(db,'items',id);
     await runTransaction(db, async (tx)=>{
@@ -300,6 +319,25 @@
       tx.update(ref, { qty: next });
     });
     await fetchItems();
+  }
+
+  async function deleteItem(id){
+    if(!confirm('Eliminare definitivamente il record?')) return;
+    const ref = doc(db,'items', id);
+    try{
+      const snap = await getDoc(ref);
+      if(!snap.exists()){ await fetchItems(); return; }
+      const it = snap.data();
+      if(currentUser.role!=='admin' && it.ownerUid !== currentUser.uid){
+        alert('Non sei autorizzato a eliminare questo record.');
+        return;
+      }
+      await deleteDoc(ref);
+      await fetchItems();
+    }catch(err){
+      console.error('DELETE ITEM ERROR:', err.code, err.message);
+      alert(`Errore eliminazione: ${err.code || err.message}`);
+    }
   }
 
   /* Profili (admin) */
@@ -382,6 +420,7 @@
             <input type="number" min="1" step="1" value="1" class="form-control form-control-sm w-auto" data-qty>
             <button class="btn btn-sm btn-primary" data-action="in" data-id="${it.id}"><i class="bi bi-plus-lg me-1"></i>Carico</button>
             <button class="btn btn-sm btn-outline-light" data-action="out" data-id="${it.id}"><i class="bi bi-dash-lg me-1"></i>Scarico</button>
+            <button class="btn btn-sm btn-outline-danger" data-action="del" data-id="${it.id}"><i class="bi bi-trash"></i></button>
           </div>
         </td>
         <td id="tdOwner" class="${currentUser.role==='admin'?'':'d-none'}">${esc(it.ownerEmail)}</td>`;
@@ -451,6 +490,7 @@
     let v=Number(tr.querySelector('[data-qty]')?.value||1); if(!Number.isFinite(v)||v<1) v=1;
     if(b.dataset.action==='in')  moveItem(id,+v);
     if(b.dataset.action==='out') moveItem(id,-v);
+    if(b.dataset.action==='del') deleteItem(id);
   });
 
   // users admin
@@ -468,7 +508,6 @@
       const cred = await createUserWithEmailAndPassword(secondaryAuth, email, pass);
       await setDoc(doc(db,'profiles',cred.user.uid), { email, role, dealer: dealer || '', createdAt: serverTimestamp() });
       msgEl.textContent=`Utente creato: ${email}`;
-      // chiudi la secondaria
       await deleteApp(getApp('secondary'));
     }catch(err){ console.error('CREATE USER ERROR:', err.code, err.message); msgEl.textContent=`Errore creazione: ${err.code}`; }
     finally{
