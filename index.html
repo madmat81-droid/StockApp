@@ -7,16 +7,14 @@
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
   <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet" />
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.3/dist/chart.umd.min.js"></script>
-  <link rel="icon" href="data:," />
   <style>
     :root{--bg:#0a0c10;--panel:#131622;--muted:#9aa3af;--border:#1f2330;--primary:#3b82f6;--accent:#10b981;--ford:#003DA5}
-    body{background:var(--bg);color:#e8eaee}
+    body{background:var(--bg);color:#e8eaee;margin:0;padding:0}
     .navbar{background:#0f121b}
     .card{background:var(--panel);border:1px solid var(--border);border-radius:16px}
-    .metric{font-size:2.2rem;font-weight:700}
     .form-control,.form-select{background:#0e1220;color:#e8eaee;border-color:#1e2432}
     .form-control:focus{box-shadow:none;border-color:var(--primary)}
-    .btn-primary{background:var(--primary);border-color:var(--primary)}
+    .btn-primary{background:var(--ford);border-color:var(--ford)}
     .btn-success{background:var(--accent);border-color:var(--accent)}
     .table-dark{--bs-table-bg:#111425;--bs-table-striped-bg:#0e1120}
     .badge-role{background:#1c2231}
@@ -24,627 +22,566 @@
     a.nav-link{color:#bfc6d4}
     a.nav-link.active{color:#fff}
 
-    /* ---- Modern login split ---- */
+    /* ---- Login split full-viewport ---- */
     body.auth-mode{background:#000}
-    /* nascondi navbar nella pagina di login */
     body.auth-mode nav{display:none}
-
-    /* wrapper full‑bleed */
-    #page-auth{padding:0;margin:0}
-    .login-split{width:100vw;margin-left:calc(50% - 50vw);display:grid;grid-template-columns:1fr 1fr;min-height:100vh}
-
-    #page-auth{padding:0;margin:0}
-    .login-split{width:100vw;margin-left:calc(50% - 50vw);display:grid;grid-template-columns:1fr 1fr;min-height:100vh}
-
-    /* left: white panel */
-    .login-left{background:#ffffff;color:#0b1220;display:flex;align-items:center;justify-content:center;padding:48px}
-    .login-box{width:100%;max-width:520px}
-    .brand-logo{max-width:340px;height:auto;margin:8px auto 24px auto;display:block}
-    .app-title{font-weight:800;color:var(--ford);text-align:center;line-height:1.1;font-size:clamp(32px,6vw,72px); margin-bottom:8px;} 
-
-    .login-left .form-control,.login-left .form-select{background:#ffffff;color:#0b1220;border-color:#d8dee9}
-    .login-left .form-control:focus{border-color:#3b82f6;box-shadow:0 0 0 .25rem rgba(59,130,246,.15)}
-
-    /* right: image */
+    #page-auth{padding:0;margin:0;min-height:100vh}
+    .login-split{width:100vw;display:grid;grid-template-columns:1fr 1fr;min-height:100vh}
+    .login-left{background:#ffffff;color:#0b1220;display:flex;flex-direction:column;justify-content:flex-start;align-items:center;padding:48px}
+    .login-header{margin-top:40px;text-align:center}
+    .app-title{font-weight:900;color:var(--ford);font-size:clamp(48px,8vw,96px);line-height:1;margin-bottom:16px}
+    .brand-logo{max-width:320px;height:auto;margin:0 auto 32px auto;display:block}
+    .login-box{width:100%;max-width:480px;margin-top:24px}
+    .login-left .form-control{background:#ffffff;color:#0b1220;border-color:#d8dee9}
+    .login-left .form-control:focus{border-color:var(--ford);box-shadow:0 0 0 .25rem rgba(0,61,165,.15)}
     .login-right{background:radial-gradient(ellipse at 20% 10%, rgba(0,0,0,.35), rgba(0,0,0,.65)), url('assets/bg.jpg') center/cover no-repeat}
-
-    /* responsiveness */
-    @media (max-width: 992px){
-      .login-split{grid-template-columns:1fr}
-      .login-right{min-height:40vh}
-    }
-
-    /* keep the rest of the site */
-    .login-logo{height:48px;object-fit:contain}
-    .text-shadow{ text-shadow:0 2px 16px rgba(0,0,0,.75); }
+    @media (max-width:992px){.login-split{grid-template-columns:1fr}.login-right{min-height:40vh}}
   </style>
 </head>
 <body>
-<nav class="navbar navbar-expand-lg navbar-dark">
-  <div class="container">
-    <a class="navbar-brand fw-semibold" href="#/stock"><i class="bi bi-box-seam me-2"></i>StockApp</a>
-    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navCollapse">
-      <span class="navbar-toggler-icon"></span>
-    </button>
-    <div id="navCollapse" class="collapse navbar-collapse">
-      <ul class="navbar-nav me-auto ms-3 gap-2">
-        <li class="nav-item"><a class="nav-link" href="#/stock"><i class="bi bi-grid-3x3-gap me-1"></i>Stock</a></li>
-        <li class="nav-item"><a class="nav-link" href="#/stats"><i class="bi bi-graph-up me-1"></i>Statistiche</a></li>
-        <li class="nav-item d-none" id="navUsers"><a class="nav-link" href="#/users"><i class="bi bi-people me-1"></i>Utenti</a></li>
-      </ul>
-      <div class="ms-auto d-flex gap-2 align-items-center">
-        <span id="userInfo" class="badge rounded-pill badge-role d-none"></span>
-        <button id="btnLogout" class="btn btn-sm btn-outline-light d-none" type="button"><i class="bi bi-box-arrow-right me-1"></i>Logout</button>
+  <!-- NAV (nascosta in login) -->
+  <nav class="navbar navbar-expand-lg navbar-dark">
+    <div class="container">
+      <a class="navbar-brand fw-semibold" href="#/stock"><i class="bi bi-box-seam me-2"></i>StockApp</a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navCollapse"><span class="navbar-toggler-icon"></span></button>
+      <div id="navCollapse" class="collapse navbar-collapse">
+        <ul class="navbar-nav me-auto ms-3 gap-2">
+          <li class="nav-item"><a class="nav-link" href="#/stock"><i class="bi bi-grid-3x3-gap me-1"></i>Stock</a></li>
+          <li class="nav-item"><a class="nav-link" href="#/stats"><i class="bi bi-graph-up me-1"></i>Statistiche</a></li>
+          <li class="nav-item d-none" id="navUsers"><a class="nav-link" href="#/users"><i class="bi bi-people me-1"></i>Utenti</a></li>
+        </ul>
+        <div class="ms-auto d-flex gap-2 align-items-center">
+          <span id="userInfo" class="badge rounded-pill badge-role d-none"></span>
+          <button id="btnLogout" class="btn btn-sm btn-outline-light d-none" type="button"><i class="bi bi-box-arrow-right me-1"></i>Logout</button>
+        </div>
       </div>
     </div>
-  </div>
-</nav>
+  </nav>
 
-<main class="container py-4">
-  <!-- LOGIN -->
-  <section id="page-auth" class="bg-transparent">
-    
-    <div class="login-split">
-      <!-- LEFT: white panel with logo + form -->
-      <div class="login-left">
-        <div class="login-box">
-          <div class="text-center">
+  <main class="container py-4">
+    <!-- LOGIN -->
+    <section id="page-auth" class="bg-transparent">
+      <div class="login-split">
+        <div class="login-left">
+          <div class="login-header">
             <div class="app-title">StockApp</div>
             <img src="assets/logo.png" alt="Logo aziendale" class="brand-logo"/>
           </div>
-          <div class="card border-0 shadow-sm" style="background:#ffffff;color:#0b1220">
-            <div class="card-body p-4 p-md-5">
-              <h1 class="h4 mb-3">Accedi</h1>
-              <div class="row g-3">
-                <div class="col-12">
-                  <label class="form-label">Email</label>
-                  <input id="email" class="form-control" autocomplete="username" placeholder="you@example.com" />
-                </div>
-                <div class="col-12">
-                  <label class="form-label">Password</label>
-                  <input id="password" type="password" class="form-control" autocomplete="current-password" placeholder="••••••" />
-                </div>
-                <div class="col-12 d-grid">
-                  <button id="btnLogin" class="btn btn-primary btn-lg" type="button"><i class="bi bi-box-arrow-in-right me-1"></i>Entra</button>
-                  <div id="authError" class="alert alert-danger mt-3 d-none" role="alert"></div>
+          <div class="login-box">
+            <div class="card border-0 shadow-sm" style="background:#ffffff;color:#0b1220">
+              <div class="card-body p-4 p-md-5">
+                <h1 class="h4 mb-3">Accedi</h1>
+                <div class="row g-3">
+                  <div class="col-12">
+                    <label class="form-label">Email</label>
+                    <input id="email" class="form-control" autocomplete="username" placeholder="you@example.com" />
+                  </div>
+                  <div class="col-12">
+                    <label class="form-label">Password</label>
+                    <input id="password" type="password" class="form-control" autocomplete="current-password" placeholder="••••••" />
+                  </div>
+                  <div class="col-12 d-grid">
+                    <button id="btnLogin" class="btn btn-primary btn-lg" type="button"><i class="bi bi-box-arrow-in-right me-1"></i>Entra</button>
+                    <div id="authError" class="alert alert-danger mt-3 d-none" role="alert"></div>
+                  </div>
                 </div>
               </div>
             </div>
           </div>
         </div>
+        <div class="login-right d-none d-lg-block"></div>
       </div>
-      <!-- RIGHT: background image -->
-      <div class="login-right d-none d-lg-block"></div>
-    </div>
-  </section>
+    </section>
 
-  <!-- DASHBOARD -->
-  <section id="page-dash" class="row g-3 d-none">
-    <div class="col-md-6">
-      <div class="card h-100"><div class="card-body d-flex align-items-center">
-        <div class="me-auto"><h5 class="card-title mb-1">Articoli</h5><div class="muted small">Record visibili</div></div>
-        <div id="metricItems" class="metric">0</div>
-      </div></div>
-    </div>
-    <div class="col-md-6">
-      <div class="card h-100"><div class="card-body d-flex align-items-center">
-        <div class="me-auto"><h5 class="card-title mb-1">Giacenza totale</h5><div class="muted small">Somma Qty visibili</div></div>
-        <div id="metricQty" class="metric">0</div>
-      </div></div>
-    </div>
-  </section>
-
-  <!-- STOCK -->
-  <section id="page-stock" class="card mt-3 d-none">
-    <div class="card-body">
-      <div class="d-flex align-items-center mb-3 gap-2">
-        <h3 class="h5 me-auto mb-0">Magazzino</h3>
-        <input id="search" class="form-control" placeholder="Cerca Finis/Complete/Descrizione/Note" style="max-width:380px" />
-        <select id="filterOwner" class="form-select d-none" style="max-width:220px"></select>
-        <a id="quickUsers" href="#/users" class="btn btn-outline-light d-none"><i class="bi bi-people me-1"></i>Gestisci utenti</a>
+    <!-- DASHBOARD (metriche rapide) -->
+    <section id="page-dash" class="row g-3 d-none">
+      <div class="col-md-6">
+        <div class="card h-100"><div class="card-body d-flex align-items-center">
+          <div class="me-auto"><h5 class="card-title mb-1">Articoli</h5><div class="muted small">Record visibili</div></div>
+          <div id="metricItems" class="fs-1 fw-bold">0</div>
+        </div></div>
       </div>
+      <div class="col-md-6">
+        <div class="card h-100"><div class="card-body d-flex align-items-center">
+          <div class="me-auto"><h5 class="card-title mb-1">Giacenza totale</h5><div class="muted small">Somma Qty visibili</div></div>
+          <div id="metricQty" class="fs-1 fw-bold">0</div>
+        </div></div>
+      </div>
+    </section>
 
-      <div class="mb-3">
-        <div class="row g-2">
-          <div class="col-lg-2"><input id="newFinis" class="form-control" placeholder="Finis Code" /></div>
-          <div class="col-lg-2"><input id="newComplete" class="form-control" placeholder="Complete Code" /></div>
-          <div class="col-lg-3"><input id="newDesc" class="form-control" placeholder="Descrizione" /></div>
-          <div class="col-lg-3"><input id="newNote" class="form-control" placeholder="Note" /></div>
-          <div class="col-lg-2 d-grid"><button id="btnAdd" class="btn btn-success" type="button"><i class="bi bi-plus-lg me-1"></i>Aggiungi</button></div>
+    <!-- STOCK -->
+    <section id="page-stock" class="card mt-3 d-none">
+      <div class="card-body">
+        <div class="d-flex align-items-center mb-3 gap-2">
+          <h3 class="h5 me-auto mb-0">Magazzino</h3>
+          <input id="search" class="form-control" placeholder="Cerca Finis/Complete/Descrizione/Note" style="max-width:380px" />
+          <select id="filterOwner" class="form-select d-none" style="max-width:220px"></select>
+          <a id="quickUsers" href="#/users" class="btn btn-outline-light d-none"><i class="bi bi-people me-1"></i>Gestisci utenti</a>
         </div>
-        <div class="muted small mt-1">I nuovi record saranno di: <span id="ownerHint">—</span></div>
-      </div>
 
-      <div class="table-responsive">
-        <table class="table table-dark table-striped align-middle">
-          <thead>
-            <tr>
-              <th>Finis</th>
-              <th>Complete</th>
-              <th>Descrizione</th>
-              <th>Note</th>
-              <th class="text-end">Qty</th>
-              <th class="text-end">Azioni</th>
-              <th id="thOwner" class="d-none">Dealer</th>
-            </tr>
-          </thead>
-          <tbody id="tbody"></tbody>
-        </table>
-      </div>
-    </div>
-  </section>
-
-  <!-- USERS (ADMIN) -->
-  <section id="page-users" class="card mt-3 d-none">
-    <div class="card-body">
-      <div class="d-flex align-items-center mb-3 gap-2">
-        <h3 class="h5 me-auto mb-0">Gestione Utenti</h3>
-        <input id="uSearch" class="form-control" placeholder="Cerca email" style="max-width:320px" />
-      </div>
-
-      <div class="row g-2 mb-3">
-        <div class="col-lg-4"><input id="uNewEmail" class="form-control" placeholder="email@dominio.it" /></div>
-        <div class="col-lg-3"><input id="uNewPassword" class="form-control" placeholder="password temporanea" /></div>
-        <div class="col-lg-3"><input id="uNewDealer" class="form-control" placeholder="Dealer (facoltativo)" /></div>
-        <div class="col-lg-2">
-          <div class="input-group">
-            <select id="uNewRole" class="form-select"><option value="user">User</option><option value="admin">Admin</option></select>
-            <button id="btnCreateUser" class="btn btn-success" type="button" title="Crea utente"><i class="bi bi-person-plus"></i></button>
+        <div class="mb-3">
+          <div class="row g-2">
+            <div class="col-lg-2"><input id="newFinis" class="form-control" placeholder="Finis Code" /></div>
+            <div class="col-lg-2"><input id="newComplete" class="form-control" placeholder="Complete Code" /></div>
+            <div class="col-lg-3"><input id="newDesc" class="form-control" placeholder="Descrizione" /></div>
+            <div class="col-lg-3"><input id="newNote" class="form-control" placeholder="Note" /></div>
+            <div class="col-lg-2 d-grid"><button id="btnAdd" class="btn btn-success" type="button"><i class="bi bi-plus-lg me-1"></i>Aggiungi</button></div>
           </div>
+          <div class="muted small mt-1">I nuovi record saranno di: <span id="ownerHint">—</span></div>
         </div>
-        <div id="uMsg" class="text-success small"></div>
+
+        <div class="table-responsive">
+          <table class="table table-dark table-striped align-middle">
+            <thead>
+              <tr>
+                <th>Finis</th>
+                <th>Complete</th>
+                <th>Descrizione</th>
+                <th>Note</th>
+                <th class="text-end">Qty</th>
+                <th class="text-end">Azioni</th>
+                <th id="thOwner" class="d-none">Dealer</th>
+              </tr>
+            </thead>
+            <tbody id="tbody"></tbody>
+          </table>
+        </div>
       </div>
+    </section>
 
-      <div class="table-responsive">
-        <table class="table table-dark table-striped align-middle">
-          <thead><tr><th>Email</th><th>Dealer</th><th>Ruolo</th><th>Stato</th><th class="text-end">Azioni</th></tr></thead>
-          <tbody id="uBody"></tbody>
-        </table>
+    <!-- USERS (ADMIN) -->
+    <section id="page-users" class="card mt-3 d-none">
+      <div class="card-body">
+        <div class="d-flex align-items-center mb-3 gap-2">
+          <h3 class="h5 me-auto mb-0">Gestione Utenti</h3>
+          <input id="uSearch" class="form-control" placeholder="Cerca email" style="max-width:320px" />
+        </div>
+
+        <div class="row g-2 mb-3">
+          <div class="col-lg-4"><input id="uNewEmail" class="form-control" placeholder="email@dominio.it" /></div>
+          <div class="col-lg-3"><input id="uNewPassword" class="form-control" placeholder="password temporanea" /></div>
+          <div class="col-lg-3"><input id="uNewDealer" class="form-control" placeholder="Dealer (facoltativo)" /></div>
+          <div class="col-lg-2">
+            <div class="input-group">
+              <select id="uNewRole" class="form-select"><option value="user">User</option><option value="admin">Admin</option></select>
+              <button id="btnCreateUser" class="btn btn-success" type="button" title="Crea utente"><i class="bi bi-person-plus"></i></button>
+            </div>
+          </div>
+          <div id="uMsg" class="text-success small"></div>
+        </div>
+
+        <div class="table-responsive">
+          <table class="table table-dark table-striped align-middle">
+            <thead><tr><th>Email</th><th>Dealer</th><th>Ruolo</th><th>Stato</th><th class="text-end">Azioni</th></tr></thead>
+            <tbody id="uBody"></tbody>
+          </table>
+        </div>
+        <div class="muted small">Per cancellare definitivamente un'utenza da <strong>Authentication</strong> usa la Cloud Function (se disponibile). Qui puoi bloccare/sbloccare via Firestore e, se la Function esiste, anche eliminare.</div>
       </div>
-      <div class="muted small">Per cancellare definitivamente un'utenza da <strong>Authentication</strong> usa la Cloud Function (se disponibile). Qui puoi bloccare/sbloccare via Firestore e, se la Function esiste, anche eliminare.</div>
-    </div>
-  </section>
+    </section>
 
-  <!-- STATS -->
-  <section id="page-stats" class="card mt-3 d-none">
-    <div class="card-body">
-      <div class="d-flex align-items-center mb-3 gap-2">
-        <h3 class="h5 me-auto mb-0">Statistiche</h3>
-        <input id="sSearch" class="form-control" placeholder="Filtro testo" style="max-width:340px" />
-        <select id="sOwner" class="form-select" style="max-width:220px"></select>
-        <button id="sApply" class="btn btn-primary" type="button"><i class="bi bi-funnel me-1"></i>Applica</button>
+    <!-- STATS -->
+    <section id="page-stats" class="card mt-3 d-none">
+      <div class="card-body">
+        <div class="d-flex align-items-center mb-3 gap-2">
+          <h3 class="h5 me-auto mb-0">Statistiche</h3>
+          <input id="sSearch" class="form-control" placeholder="Filtro testo" style="max-width:340px" />
+          <select id="sOwner" class="form-select" style="max-width:220px"></select>
+          <button id="sApply" class="btn btn-primary" type="button"><i class="bi bi-funnel me-1"></i>Applica</button>
+        </div>
+        <div class="row g-4">
+          <div class="col-12"><div class="card"><div class="card-body">
+            <h6 class="mb-2">Top codici per Qty</h6>
+            <canvas id="chartTopCodes" height="120"></canvas>
+          </div></div></div>
+          <div class="col-12"><div class="card"><div class="card-body">
+            <h6 class="mb-2">Distribuzione Qty per Owner</h6>
+            <canvas id="chartByOwner" height="120"></canvas>
+          </div></div></div>
+        </div>
       </div>
-      <div class="row g-4">
-        <div class="col-12"><div class="card"><div class="card-body">
-          <h6 class="mb-2">Top codici per Qty</h6>
-          <canvas id="chartTopCodes" height="120"></canvas>
-        </div></div></div>
-        <div class="col-12"><div class="card"><div class="card-body">
-          <h6 class="mb-2">Distribuzione Qty per Owner</h6>
-          <canvas id="chartByOwner" height="120"></canvas>
-        </div></div></div>
-      </div>
-    </div>
-  </section>
-</main>
+    </section>
+  </main>
 
-<!-- ===== APP (Firebase) ===== -->
-<script type="module">
-  import { initializeApp, getApp, deleteApp } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-app.js";
-  import { getAuth, setPersistence, browserLocalPersistence, signInWithEmailAndPassword, signOut, onAuthStateChanged, createUserWithEmailAndPassword, sendPasswordResetEmail } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-auth.js";
-  import { getFirestore, collection, doc, getDoc, getDocs, setDoc, updateDoc, query, where, orderBy, runTransaction, serverTimestamp, deleteDoc } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-firestore.js";
-  import { getFunctions, httpsCallable } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-functions.js";
+  <!-- ===== APP (Firebase) ===== -->
+  <script type="module">
+    import { initializeApp, getApp, deleteApp } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-app.js";
+    import { getAuth, setPersistence, browserLocalPersistence, signInWithEmailAndPassword, signOut, onAuthStateChanged, createUserWithEmailAndPassword, sendPasswordResetEmail } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-auth.js";
+    import { getFirestore, collection, doc, getDoc, getDocs, setDoc, updateDoc, query, where, orderBy, runTransaction, serverTimestamp, deleteDoc } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-firestore.js";
+    import { getFunctions, httpsCallable } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-functions.js";
 
-  const firebaseConfig = {
-    apiKey: "AIzaSyABezXPgHhyvPknItXGyuvA-vKozNw6_qw",
-    authDomain: "stockappdb-2420d.firebaseapp.com",
-    projectId: "stockappdb-2420d",
-    messagingSenderId: "856091877639",
-    storageBucket: "stockappdb-2420d.appspot.com"
-  };
+    const firebaseConfig = {
+      apiKey: "AIzaSyABezXPgHhyvPknItXGyuvA-vKozNw6_qw",
+      authDomain: "stockappdb-2420d.firebaseapp.com",
+      projectId: "stockappdb-2420d",
+      messagingSenderId: "856091877639",
+      storageBucket: "stockappdb-2420d.appspot.com"
+    };
 
-  const app = initializeApp(firebaseConfig);
-  const auth = getAuth(app);
-  const db   = getFirestore(app);
-  const fns  = getFunctions(app);
-  await setPersistence(auth, browserLocalPersistence);
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db   = getFirestore(app);
+    const fns  = getFunctions(app);
+    await setPersistence(auth, browserLocalPersistence);
 
-  // Se hai deployato le funzioni, esponile (se non esistono le chiamate falliranno silenziosamente nei catch interni)
-  let fnSetDisabled, fnDeleteUser;
-  try { fnSetDisabled = httpsCallable(fns, 'adminSetDisabled'); } catch(_){}
-  try { fnDeleteUser  = httpsCallable(fns, 'adminDeleteUser'); } catch(_){}
+    let fnSetDisabled, fnDeleteUser;
+    try { fnSetDisabled = httpsCallable(fns, 'adminSetDisabled'); } catch(_){}
+    try { fnDeleteUser  = httpsCallable(fns, 'adminDeleteUser'); } catch(_){}
 
-  /* Stato */
-  let currentUser = null; // { uid, email, role, dealer, disabled }
-  let itemsCache  = [];
-  let chartTop=null, chartOwner=null;
-  // mappa profili per accesso rapido (uid -> {email, dealer, role, disabled})
-  let profilesMap = new Map();
+    /* Stato */
+    let currentUser = null; // { uid, email, role, dealer, disabled }
+    let itemsCache  = [];
+    let chartTop=null, chartOwner=null;
+    let profilesMap = new Map(); // uid -> profile
 
-  const $  = s => document.querySelector(s);
-  const $$ = s => document.querySelectorAll(s);
-  const esc = s => (s ?? '').toString().replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;','\'':'&#39;'}[m]));
-  const byEmail = e => (e||'').trim().toLowerCase();
+    const $  = s => document.querySelector(s);
+    const $$ = s => document.querySelectorAll(s);
+    const esc = s => (s ?? '').toString().replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;','\'':'&#39;'}[m]));
+    const byEmail = e => (e||'').trim().toLowerCase();
 
-  // chiave univoca PER OWNER (uid + finis + complete)
-  function makeKey(finis, complete){
-    const f=(finis||'').trim().toLowerCase();
-    const c=(complete||'').trim().toLowerCase();
-    return `${currentUser.uid}__${f}__${c}`;
-  }
+    function showOnly(...ids){
+      ['page-auth','page-dash','page-stock','page-users','page-stats'].forEach(id=>$('#'+id).classList.add('d-none'));
+      ids.forEach(id=>$('#'+id).classList.remove('d-none'));
+      if(ids.includes('page-auth')) document.body.classList.add('auth-mode'); else document.body.classList.remove('auth-mode');
+    }
+    function setActive(hash){ $$('.nav-link').forEach(a=>a.classList.remove('active')); const l=document.querySelector(`.nav-link[href="${hash}"]`); if(l) l.classList.add('active'); }
+    function renderNav(){
+      const info=$('#userInfo'), out=$('#btnLogout'), navUsers=$('#navUsers'), quick=$('#quickUsers');
+      if(!currentUser){ info.classList.add('d-none'); out.classList.add('d-none'); navUsers.classList.add('d-none'); quick.classList.add('d-none'); return; }
+      const dealerTxt = currentUser.dealer ? ` • ${currentUser.dealer}` : '';
+      const badge = currentUser.disabled ? ' (bloccato)' : '';
+      info.textContent = `${currentUser.email} • ${currentUser.role}${dealerTxt}${badge}`;
+      info.classList.remove('d-none'); out.classList.remove('d-none');
+      const isAdmin=currentUser.role==='admin';
+      navUsers.classList.toggle('d-none', !isAdmin);
+      quick.classList.toggle('d-none', !isAdmin);
+    }
 
-  /* Auth + profili */
-  async function ensureProfile(uid, email){
-    const ref = doc(db, 'profiles', uid);
-    const snap = await getDoc(ref);
-    if (!snap.exists()) {
-      const data = { email, role: 'user', dealer: '', disabled: false, createdAt: serverTimestamp() };
-      await setDoc(ref, data);
+    function routeTo(hash){
+      if(!currentUser){ showOnly('page-auth'); setActive(''); return; }
+      if(hash==='#/users' && currentUser.role!=='admin'){ hash='#/stock'; }
+      if(hash==='#/stock'){ showOnly('page-dash','page-stock'); renderStock(); setActive('#/stock'); }
+      if(hash==='#/stats'){ showOnly('page-stats'); renderStats(); setActive('#/stats'); }
+      if(hash==='#/users'){ showOnly('page-users'); renderUsers(); setActive('#/users'); }
+    }
+    window.addEventListener('hashchange',()=>routeTo(location.hash));
+
+    // chiave univoca PER OWNER
+    function makeKey(finis, complete){
+      const f=(finis||'').trim().toLowerCase();
+      const c=(complete||'').trim().toLowerCase();
+      return `${currentUser.uid}__${f}__${c}`;
+    }
+
+    /* Auth + profili */
+    async function ensureProfile(uid, email){
+      const ref = doc(db, 'profiles', uid);
+      const snap = await getDoc(ref);
+      if (!snap.exists()) {
+        const data = { email, role: 'user', dealer: '', disabled: false, createdAt: serverTimestamp() };
+        await setDoc(ref, data);
+        return data;
+      }
+      const data = snap.data();
+      if (data.dealer === undefined) data.dealer = '';
+      if (data.disabled === undefined) data.disabled = false;
       return data;
     }
-    const data = snap.data();
-    if (data.dealer === undefined) data.dealer = '';
-    if (data.disabled === undefined) data.disabled = false;
-    return data;
-  }
 
-  function showLoginError(err){
-    const box = $('#authError');
-    const map={
-      'auth/invalid-email':'Email non valida.',
-      'auth/missing-password':'Inserisci la password.',
-      'auth/invalid-credential':'Email o password errata.',
-      'auth/user-not-found':'Utente non trovato.',
-      'auth/wrong-password':'Password errata.',
-      'auth/operation-not-allowed':'Abilita Email/Password in Firebase → Authentication.',
-      'auth/unauthorized-domain':'Aggiungi il dominio GitHub Pages tra i domini autorizzati.',
-      'auth/network-request-failed':'Errore di rete. Riprova.'
-    };
-    box.textContent = map[err.code] || `Errore di accesso: ${err.code}`;
-    box.classList.remove('d-none');
-  }
+    function showLoginError(err){
+      const box = $('#authError');
+      const map={
+        'auth/invalid-email':'Email non valida.',
+        'auth/missing-password':'Inserisci la password.',
+        'auth/invalid-credential':'Email o password errata.',
+        'auth/user-not-found':'Utente non trovato.',
+        'auth/wrong-password':'Password errata.',
+        'auth/operation-not-allowed':'Abilita Email/Password in Firebase → Authentication.',
+        'auth/unauthorized-domain':'Aggiungi il dominio GitHub Pages tra i domini autorizzati.',
+        'auth/network-request-failed':'Errore di rete. Riprova.'
+      };
+      box.textContent = map[err.code] || `Errore di accesso: ${err.code}`;
+      box.classList.remove('d-none');
+    }
 
-  async function doLogin(email, password){
-    const btn = $('#btnLogin'); const box = $('#authError');
-    box.classList.add('d-none'); box.textContent=''; btn.disabled=true;
-    try {
-      const cred = await signInWithEmailAndPassword(auth, email, password);
-      const prof = await ensureProfile(cred.user.uid, cred.user.email || email);
-      if (prof.disabled === true) {
-        await signOut(auth);
-        box.textContent = 'Account bloccato. Contatta un amministratore.';
-        box.classList.remove('d-none');
-        return;
-      }
-      currentUser = { uid: cred.user.uid, email: cred.user.email || email, role: prof.role, dealer: prof.dealer || '', disabled: !!prof.disabled };
+    async function doLogin(email, password){
+      const btn = $('#btnLogin'); const box = $('#authError');
+      box.classList.add('d-none'); box.textContent=''; btn.disabled=true;
+      try {
+        const cred = await signInWithEmailAndPassword(auth, email, password);
+        const prof = await ensureProfile(cred.user.uid, cred.user.email || email);
+        if (prof.disabled === true) { await signOut(auth); box.textContent = 'Account bloccato. Contatta un amministratore.'; box.classList.remove('d-none'); return; }
+        currentUser = { uid: cred.user.uid, email: cred.user.email || email, role: prof.role, dealer: prof.dealer || '', disabled: !!prof.disabled };
+        renderNav(); routeTo(location.hash || '#/stock'); await refreshAll();
+      } catch(err){ console.error('LOGIN ERROR:', err.code, err.message); showLoginError(err); }
+      finally { btn.disabled=false; }
+    }
+    async function doLogout(){ await signOut(auth); currentUser=null; renderNav(); showOnly('page-auth'); }
+
+    onAuthStateChanged(auth, async (u)=>{
+      if(!u){ currentUser=null; renderNav(); showOnly('page-auth'); return; }
+      const prof = await ensureProfile(u.uid, u.email);
+      if (prof.disabled === true) { await signOut(auth); return; }
+      currentUser = { uid: u.uid, email: u.email, role: prof.role, dealer: prof.dealer || '', disabled: !!prof.disabled };
       renderNav(); routeTo(location.hash || '#/stock'); await refreshAll();
-    } catch(err){ console.error('LOGIN ERROR:', err.code, err.message); showLoginError(err); }
-    finally { btn.disabled=false; }
-  }
-  async function doLogout(){ await signOut(auth); currentUser=null; renderNav(); showOnly('page-auth'); }
+    });
 
-  onAuthStateChanged(auth, async (u)=>{
-    if(!u){ currentUser=null; renderNav(); showOnly('page-auth'); return; }
-    const prof = await ensureProfile(u.uid, u.email);
-    if (prof.disabled === true) { await signOut(auth); return; }
-    currentUser = { uid: u.uid, email: u.email, role: prof.role, dealer: prof.dealer || '', disabled: !!prof.disabled };
-    renderNav(); routeTo(location.hash || '#/stock'); await refreshAll();
-  });
+    /* Items */
+    async function fetchItems(){
+      if(!currentUser) return;
+      let qRef;
+      if(currentUser.role==='admin') qRef = query(collection(db,'items'), orderBy('createdAt','desc'));
+      else qRef = query(collection(db,'items'), where('ownerUid','==',currentUser.uid), orderBy('createdAt','desc'));
+      const snap = await getDocs(qRef);
+      itemsCache = snap.docs.map(d=>({ id:d.id, ...d.data() }));
 
-  /* Items */
-  async function fetchItems(){
-    if(!currentUser) return;
-    let qRef;
-    if(currentUser.role==='admin'){
-      qRef = query(collection(db,'items'), orderBy('createdAt','desc'));
-    } else {
-      qRef = query(collection(db,'items'), where('ownerUid','==',currentUser.uid), orderBy('createdAt','desc'));
+      if(currentUser.role==='admin'){
+        const ps = await getDocs(collection(db,'profiles'));
+        profilesMap = new Map(ps.docs.map(d=>[d.id, d.data()]));
+      }
+      renderStock(); renderStats();
     }
-    const snap = await getDocs(qRef);
-    itemsCache = snap.docs.map(d=>({ id:d.id, ...d.data() }));
 
-    // se admin, carica anche i profili per mostrare il Dealer
-    if(currentUser.role==='admin'){
-      const ps = await getDocs(collection(db,'profiles'));
-      profilesMap = new Map(ps.docs.map(d=>[d.id, d.data()]));
+    async function addItem(){
+      const finis   = $('#newFinis').value.trim();
+      const complete= $('#newComplete').value.trim();
+      const desc    = $('#newDesc').value.trim();
+      const note    = $('#newNote').value.trim();
+      if(!finis && !complete){ alert('Inserisci almeno Finis o Complete'); return; }
+      const key = makeKey(finis, complete);
+      try{
+        const ref = doc(db, 'items', key);
+        const snap = await getDoc(ref);
+        if(snap.exists()){ alert('Hai già un record con lo stesso Finis e Complete.'); return; }
+        await setDoc(ref, { key, ownerUid: currentUser.uid, ownerEmail: currentUser.email, finis, complete, desc, note, qty: 0, createdAt: serverTimestamp() });
+        ['#newFinis','#newComplete','#newDesc','#newNote'].forEach(s=>$(s).value='');
+        await fetchItems();
+      }catch(err){ console.error('ADD ITEM ERROR:', err.code, err.message); alert(`Errore nel salvataggio: ${err.code || err.message}`); }
     }
-    renderStock(); renderStats();
-  }
 
-  async function addItem(){
-    const finis   = $('#newFinis').value.trim();
-    const complete= $('#newComplete').value.trim();
-    const desc    = $('#newDesc').value.trim();
-    const note    = $('#newNote').value.trim();
+    async function moveItem(id, delta){
+      const ref = doc(db,'items',id);
+      await runTransaction(db, async (tx)=>{
+        const snap = await tx.get(ref); if(!snap.exists()) return;
+        const it = snap.data();
+        if(currentUser.role!=='admin' && it.ownerUid!==currentUser.uid) throw new Error('Non autorizzato');
+        const next = Math.max(0, Number(it.qty||0)+Number(delta||0));
+        tx.update(ref, { qty: next });
+      });
+      await fetchItems();
+    }
 
-    if(!finis && !complete){ alert('Inserisci almeno Finis o Complete'); return; }
+    async function deleteItem(id){
+      if(!confirm('Eliminare definitivamente il record?')) return;
+      const ref = doc(db,'items', id);
+      try{
+        const snap = await getDoc(ref);
+        if(!snap.exists()){ await fetchItems(); return; }
+        const it = snap.data();
+        if(currentUser.role!=='admin' && it.ownerUid !== currentUser.uid){ alert('Non sei autorizzato a eliminare questo record.'); return; }
+        await deleteDoc(ref);
+        await fetchItems();
+      }catch(err){ console.error('DELETE ITEM ERROR:', err.code, err.message); alert(`Errore eliminazione: ${err.code || err.message}`); }
+    }
 
-    const key = makeKey(finis, complete);
-    try{
-      // blocco duplicati per owner
-      const ref = doc(db, 'items', key);
-      const snap = await getDoc(ref);
-      if(snap.exists()){
-        alert('Hai già un record con lo stesso Finis e Complete.');
+    /* Profili (admin) */
+    async function fetchProfiles(){ if(currentUser?.role!=='admin') return []; const snap = await getDocs(collection(db,'profiles')); return snap.docs.map(d=>({ id:d.id, ...d.data() })).sort((a,b)=> (a.email||'').localeCompare(b.email||'')); }
+    async function setUserRole(uid, role){ if(currentUser?.role!=='admin') return; await updateDoc(doc(db,'profiles',uid), { role }); if(uid===currentUser.uid){ currentUser.role=role; renderNav(); } await renderUsers(); }
+
+    /* Helpers filtri */
+    function ownerOptions(selectEl){
+      if(currentUser.role!=='admin'){ selectEl.classList.add('d-none'); return; }
+      const prev = selectEl.value;
+      const owners=[...new Set(itemsCache.map(x=>byEmail(x.ownerEmail)).filter(Boolean))].sort();
+      selectEl.innerHTML = `<option value="__auto__">— Filtro Owner (auto) —</option><option value="__all__">Tutti</option>` + owners.map(o=>`<option value="${o}">${o}</option>`).join('');
+      if(prev && [...selectEl.options].some(op=>op.value===prev)) selectEl.value = prev;
+      selectEl.classList.remove('d-none');
+    }
+    function visibleItems(text='', ownerSel='__auto__'){
+      let arr=itemsCache;
+      if(currentUser.role!=='admin'){ arr=arr.filter(r=>byEmail(r.ownerEmail)===byEmail(currentUser.email)); }
+      else if(ownerSel && ownerSel!=='__auto__' && ownerSel!=='__all__'){ arr=arr.filter(r=>byEmail(r.ownerEmail)===byEmail(ownerSel)); }
+      const q=(text||'').toLowerCase();
+      if(q){ arr=arr.filter(r=>(r.finis||'').toLowerCase().includes(q)||(r.complete||'').toLowerCase().includes(q)||(r.desc||'').toLowerCase().includes(q)||(r.note||'').toLowerCase().includes(q)); }
+      return arr;
+    }
+    function metrics(arr){ return { totalItems:arr.length, totalQty:arr.reduce((a,b)=>a+Number(b.qty||0),0) } }
+
+    /* Render Stock */
+    function renderStock(){
+      if(!currentUser) return;
+      $('#ownerHint').textContent = currentUser.email;
+      ownerOptions($('#filterOwner'));
+      const list=visibleItems($('#search').value, $('#filterOwner').value);
+      const {totalItems,totalQty}=metrics(list);
+      $('#metricItems').textContent=totalItems; $('#metricQty').textContent=totalQty;
+
+      const tbody=$('#tbody'); tbody.innerHTML='';
+      for(const it of list){
+        const tr=document.createElement('tr'); tr.dataset.id=it.id;
+        tr.innerHTML=`
+          <td>${esc(it.finis)}</td>
+          <td>${esc(it.complete)}</td>
+          <td>${esc(it.desc)}</td>
+          <td>${esc(it.note)}</td>
+          <td class="text-end">${Number(it.qty||0)}</td>
+          <td class="text-end">
+            <div class="d-inline-flex align-items-center gap-1">
+              <input type="number" min="1" step="1" value="1" class="form-control form-control-sm w-auto" data-qty>
+              <button class="btn btn-sm btn-primary" data-action="in" data-id="${it.id}"><i class="bi bi-plus-lg me-1"></i>Carico</button>
+              <button class="btn btn-sm btn-outline-light" data-action="out" data-id="${it.id}"><i class="bi bi-dash-lg me-1"></i>Scarico</button>
+              <button class="btn btn-sm btn-outline-danger" data-action="del" data-id="${it.id}"><i class="bi bi-trash"></i></button>
+            </div>
+          </td>
+          <td id="tdOwner" class="${currentUser.role==='admin'?'':'d-none'}">${esc((profilesMap.get(it.ownerUid)?.dealer)||it.ownerEmail)}</td>`;
+        tbody.appendChild(tr);
+      }
+      $('#thOwner').classList.toggle('d-none', currentUser.role!=='admin');
+    }
+
+    /* Render Users (admin) */
+    async function renderUsers(){
+      if(currentUser?.role!=='admin') return;
+      const q=$('#uSearch').value.trim().toLowerCase();
+      const rows=(await fetchProfiles()).filter(p=>!q || (p.email||'').toLowerCase().includes(q));
+      const uBody=$('#uBody'); uBody.innerHTML='';
+      for(const u of rows){
+        const tr=document.createElement('tr'); tr.dataset.uid=u.id;
+        const isDisabled = !!u.disabled;
+        tr.innerHTML=`
+          <td>${esc(u.email||u.id)}</td>
+          <td><input class="form-control form-control-sm w-auto d-inline" data-udealer="${esc(u.id)}" value="${esc(u.dealer||'')}" placeholder="Dealer"/></td>
+          <td>
+            <select class="form-select form-select-sm w-auto d-inline" data-urole="${esc(u.id)}">
+              <option value="user" ${u.role==='user'?'selected':''}>User</option>
+              <option value="admin" ${u.role==='admin'?'selected':''}>Admin</option>
+            </select>
+          </td>
+          <td>
+            <div class="form-check form-switch">
+              <input class="form-check-input" type="checkbox" data-udisabled="${esc(u.id)}" ${isDisabled ? 'checked' : ''}>
+              <label class="form-check-label">${isDisabled ? 'Bloccato' : 'Attivo'}</label>
+            </div>
+          </td>
+          <td class="text-end">
+            <button class="btn btn-sm btn-outline-light me-2" data-action="pwreset" data-email="${esc(u.email||'')}"><i class="bi bi-envelope"></i> Reset password</button>
+            <button class="btn btn-sm btn-outline-danger" data-action="deleteUser" data-uid="${esc(u.id)}" ${!isDisabled ? 'disabled title="Blocca prima di eliminare"' : ''}><i class="bi bi-person-x"></i> Elimina</button>
+          </td>`;
+        uBody.appendChild(tr);
+      }
+    }
+
+    /* Render Stats */
+    function renderStats(){
+      if(!currentUser) return;
+      const sOwner=$('#sOwner'); ownerOptions(sOwner);
+      const list=visibleItems($('#sSearch').value, sOwner.value);
+
+      const mapCodes=new Map();
+      for(const it of list){ const key=(it.complete||it.finis||'—'); mapCodes.set(key,(mapCodes.get(key)||0)+Number(it.qty||0)); }
+      const top=[...mapCodes.entries()].sort((a,b)=>b[1]-a[1]).slice(0,12);
+      const labelsTop=top.map(x=>x[0]); const dataTop=top.map(x=>x[1]);
+
+      const mapOwner=new Map();
+      for(const it of list){ const k=it.ownerEmail||'—'; mapOwner.set(k,(mapOwner.get(k)||0)+Number(it.qty||0)); }
+      const labelsOwn=[...mapOwner.keys()], dataOwn=[...mapOwner.values()];
+
+      if(chartTop) chartTop.destroy(); if(chartOwner) chartOwner.destroy();
+      chartTop=new Chart($('#chartTopCodes'),{type:'bar',data:{labels:labelsTop,datasets:[{label:'Qty',data:dataTop}]},options:{plugins:{legend:{display:false}}}});
+      chartOwner=new Chart($('#chartByOwner'),{type:'pie',data:{labels:labelsOwn,datasets:[{label:'Qty',data:dataOwn}]}});
+    }
+
+    /* Event wiring */
+    // login
+    $('#btnLogin').addEventListener('click',()=>doLogin($('#email').value.trim(), $('#password').value));
+    const onEnter=(e)=>{ if(e.key==='Enter') $('#btnLogin').click(); };
+    $('#email').addEventListener('keydown',onEnter); $('#password').addEventListener('keydown',onEnter);
+    $('#btnLogout').addEventListener('click',doLogout);
+
+    // stock
+    $('#search').addEventListener('input',renderStock);
+    $('#filterOwner').addEventListener('change',renderStock);
+    $('#btnAdd').addEventListener('click',addItem);
+    $('#tbody').addEventListener('click',e=>{
+      const b=e.target.closest('button[data-action]'); if(!b) return;
+      const tr=b.closest('tr'); const id=b.dataset.id||tr?.dataset?.id;
+      let v=Number(tr.querySelector('[data-qty]')?.value||1); if(!Number.isFinite(v)||v<1) v=1;
+      if(b.dataset.action==='in')  moveItem(id,+v);
+      if(b.dataset.action==='out') moveItem(id,-v);
+      if(b.dataset.action==='del') deleteItem(id);
+    });
+
+    // users admin
+    document.getElementById('btnCreateUser').addEventListener('click', async ()=>{
+      if(currentUser?.role!=='admin') return;
+      const email=$('#uNewEmail').value.trim();
+      const pass=$('#uNewPassword').value.trim();
+      const role=$('#uNewRole').value; const dealer=$('#uNewDealer').value.trim();
+      const msgEl=$('#uMsg'); msgEl.textContent='';
+      if(!email||!pass){ msgEl.textContent='Email e password sono obbligatorie.'; return; }
+      try{
+        const secondary = initializeApp(firebaseConfig, 'secondary');
+        const secondaryAuth = getAuth(secondary);
+        const cred = await createUserWithEmailAndPassword(secondaryAuth, email, pass);
+        await setDoc(doc(db,'profiles',cred.user.uid), { email, role, dealer: dealer || '', disabled: false, createdAt: serverTimestamp() });
+        msgEl.textContent=`Utente creato: ${email}`;
+        await deleteApp(getApp('secondary'));
+      }catch(err){ console.error('CREATE USER ERROR:', err.code, err.message); msgEl.textContent=`Errore creazione: ${err.code}`; }
+      finally{
+        ['uNewEmail','uNewPassword','uNewDealer'].forEach(id=>document.getElementById(id).value='');
+        $('#uNewRole').value='user'; await renderUsers();
+      }
+    });
+
+    document.getElementById('uBody').addEventListener('change', async (e)=>{
+      const sel=e.target.closest('select[data-urole]');
+      if(sel){ await setUserRole(sel.getAttribute('data-urole'), sel.value); return; }
+      const chk=e.target.closest('input[data-udisabled]');
+      if(chk){
+        const uid=chk.getAttribute('data-udisabled');
+        try{
+          await updateDoc(doc(db,'profiles',uid), { disabled: chk.checked });
+          try{ if(fnSetDisabled) await fnSetDisabled({ uid, disabled: chk.checked }); }catch(_){/* opzionale */}
+          const row=chk.closest('tr'); row.querySelector('.form-check-label').textContent = chk.checked ? 'Bloccato' : 'Attivo';
+          const delBtn=row.querySelector('button[data-action="deleteUser"]'); if(delBtn){ delBtn.disabled=!chk.checked; delBtn.title = chk.checked ? '' : 'Blocca prima di eliminare'; }
+        }catch(err){ console.error('DISABLE USER ERROR:', err.code, err.message); alert('Permesso negato nel cambiare stato.'); chk.checked=!chk.checked; }
+      }
+    });
+
+    document.getElementById('uBody').addEventListener('input', async (e)=>{
+      const inp=e.target.closest('input[data-udealer]'); if(!inp) return; const uid=inp.getAttribute('data-udealer');
+      clearTimeout(inp._t);
+      inp._t=setTimeout(async()=>{ try{ await updateDoc(doc(db,'profiles',uid), { dealer: inp.value.trim() }); }catch(err){ console.error('UPDATE DEALER ERROR:', err.code, err.message); alert('Impossibile aggiornare Dealer.'); } },400);
+    });
+
+    document.getElementById('uBody').addEventListener('click', async (e)=>{
+      const b=e.target.closest('button[data-action]'); if(!b) return;
+      if (b.dataset.action==='pwreset'){
+        const email=b.getAttribute('data-email');
+        try{ await sendPasswordResetEmail(auth, email); alert(`Email inviata a: ${email}`); }
+        catch(err){ console.error('PW RESET ERROR:', err.code, err.message); alert(`Errore invio email: ${err.code}`); }
         return;
       }
-      await setDoc(ref, {
-        key,
-        ownerUid: currentUser.uid,
-        ownerEmail: currentUser.email,
-        finis, complete, desc, note,
-        qty: 0,
-        createdAt: serverTimestamp()
-      });
-      ['#newFinis','#newComplete','#newDesc','#newNote'].forEach(s=>$(s).value='');
-      await fetchItems();
-    }catch(err){ console.error('ADD ITEM ERROR:', err.code, err.message); alert(`Errore nel salvataggio: ${err.code || err.message}`); }
-  }
-
-  async function moveItem(id, delta){
-    const ref = doc(db,'items',id);
-    await runTransaction(db, async (tx)=>{
-      const snap = await tx.get(ref); if(!snap.exists()) return;
-      const it = snap.data();
-      if(currentUser.role!=='admin' && it.ownerUid!==currentUser.uid) throw new Error('Non autorizzato');
-      const next = Math.max(0, Number(it.qty||0)+Number(delta||0));
-      tx.update(ref, { qty: next });
+      if (b.dataset.action==='deleteUser'){
+        const uid=b.getAttribute('data-uid');
+        if(!confirm('Eliminare definitivamente questa utenza?')) return;
+        try{
+          try{ if(fnDeleteUser) await fnDeleteUser({ uid }); }catch(_){ }
+          await deleteDoc(doc(db,'profiles',uid));
+          await renderUsers();
+          alert('Utenza eliminata (profilo). Se hai la Cloud Function, è stata rimossa anche da Authentication.');
+        }catch(err){ console.error('DELETE AUTH USER ERROR:', err); alert(`Errore eliminazione utente: ${err.message || err}`); }
+      }
     });
-    await fetchItems();
-  }
 
-  async function deleteItem(id){
-    if(!confirm('Eliminare definitivamente il record?')) return;
-    const ref = doc(db,'items', id);
-    try{
-      const snap = await getDoc(ref);
-      if(!snap.exists()){ await fetchItems(); return; }
-      const it = snap.data();
-      if(currentUser.role!=='admin' && it.ownerUid !== currentUser.uid){ alert('Non sei autorizzato a eliminare questo record.'); return; }
-      await deleteDoc(ref);
-      await fetchItems();
-    }catch(err){ console.error('DELETE ITEM ERROR:', err.code, err.message); alert(`Errore eliminazione: ${err.code || err.message}`); }
-  }
+    // stats
+    $('#sApply').addEventListener('click', renderStats);
 
-  /* Profili (admin) */
-  async function fetchProfiles(){
-    if(currentUser?.role!=='admin') return [];
-    const snap = await getDocs(collection(db,'profiles'));
-    return snap.docs.map(d=>({ id:d.id, ...d.data() }))
-                    .sort((a,b)=> (a.email||'').localeCompare(b.email||''));
-  }
+    async function fetchProfilesIntoMap(){ const ps = await getDocs(collection(db,'profiles')); profilesMap = new Map(ps.docs.map(d=>[d.id, d.data()])); }
+    async function refreshAll(){ await fetchItems(); if(currentUser?.role==='admin') await fetchProfilesIntoMap(); renderStats(); }
 
-  async function setUserRole(uid, role){ if(currentUser?.role!=='admin') return; await updateDoc(doc(db,'profiles',uid), { role }); if(uid===currentUser.uid){ currentUser.role=role; renderNav(); } await renderUsers(); }
-
-  /* Router/UI comuni */
-  function renderNav(){
-    const info=$('#userInfo'), out=$('#btnLogout'), navUsers=$('#navUsers'), quick=$('#quickUsers');
-    if(!currentUser){ info.classList.add('d-none'); out.classList.add('d-none'); navUsers.classList.add('d-none'); quick.classList.add('d-none'); return; }
-    const dealerTxt = currentUser.dealer ? ` • ${currentUser.dealer}` : '';
-    const badge = currentUser.disabled ? ' (bloccato)' : '';
-    info.textContent = `${currentUser.email} • ${currentUser.role}${dealerTxt}${badge}`;
-    info.classList.remove('d-none'); out.classList.remove('d-none');
-    const isAdmin=currentUser.role==='admin';
-    navUsers.classList.toggle('d-none', !isAdmin);
-    quick.classList.toggle('d-none', !isAdmin);
-  }
-  function setActive(hash){ $$('.nav-link').forEach(a=>a.classList.remove('active')); const l=document.querySelector(`.nav-link[href="${hash}"]`); if(l) l.classList.add('active'); }
-  function showOnly(...ids){
-    ['page-auth','page-dash','page-stock','page-users','page-stats'].forEach(id=>document.getElementById(id).classList.add('d-none'));
-    ids.forEach(id=>document.getElementById(id).classList.remove('d-none'));
-    // toggle background mode for the login hero
-    if(ids.includes('page-auth')) document.body.classList.add('auth-mode');
-    else document.body.classList.remove('auth-mode');
-  }
-  function routeTo(hash){
-    if(!currentUser){ showOnly('page-auth'); setActive(''); return; }
-    if(hash==='#/users' && currentUser.role!=='admin'){ hash='#/stock'; }
-    if(hash==='#/stock'){ showOnly('page-dash','page-stock'); renderStock(); setActive('#/stock'); }
-    if(hash==='#/stats'){ showOnly('page-stats'); renderStats(); setActive('#/stats'); }
-    if(hash==='#/users'){ showOnly('page-users'); renderUsers(); setActive('#/users'); }
-  }
-  window.addEventListener('hashchange',()=>routeTo(location.hash));
-  async function refreshAll(){ await fetchItems(); await renderUsers(); renderStats(); }
-
-  /* Helpers filtri */
-  function ownerOptions(selectEl){
-    if(currentUser.role!=='admin'){ selectEl.classList.add('d-none'); return; }
-    const prev = selectEl.value;
-    const owners=[...new Set(itemsCache.map(x=>byEmail(x.ownerEmail)).filter(Boolean))].sort();
-    selectEl.innerHTML = `<option value="__auto__">— Filtro Owner (auto) —</option><option value="__all__">Tutti</option>` + owners.map(o=>`<option value="${o}">${o}</option>`).join('');
-    if(prev && [...selectEl.options].some(op=>op.value===prev)) selectEl.value = prev;
-    selectEl.classList.remove('d-none');
-  }
-  function visibleItems(text='', ownerSel='__auto__'){
-    let arr=itemsCache;
-    if(currentUser.role!=='admin'){ arr=arr.filter(r=>byEmail(r.ownerEmail)===byEmail(currentUser.email)); }
-    else if(ownerSel && ownerSel!=='__auto__' && ownerSel!=='__all__'){ arr=arr.filter(r=>byEmail(r.ownerEmail)===byEmail(ownerSel)); }
-    const q=(text||'').toLowerCase();
-    if(q){ arr=arr.filter(r=>(r.finis||'').toLowerCase().includes(q)||(r.complete||'').toLowerCase().includes(q)||(r.desc||'').toLowerCase().includes(q)||(r.note||'').toLowerCase().includes(q)); }
-    return arr;
-  }
-  function metrics(arr){ return { totalItems:arr.length, totalQty:arr.reduce((a,b)=>a+Number(b.qty||0),0) } }
-
-  /* Render Stock */
-  function renderStock(){
-    if(!currentUser) return;
-    $('#ownerHint').textContent = currentUser.email;
-    ownerOptions($('#filterOwner'));
-    const list=visibleItems($('#search').value, $('#filterOwner').value);
-    const {totalItems,totalQty}=metrics(list);
-    $('#metricItems').textContent=totalItems; $('#metricQty').textContent=totalQty;
-
-    const tbody=$('#tbody'); tbody.innerHTML='';
-    for(const it of list){
-      const tr=document.createElement('tr'); tr.dataset.id=it.id;
-      tr.innerHTML=`
-        <td>${esc(it.finis)}</td>
-        <td>${esc(it.complete)}</td>
-        <td>${esc(it.desc)}</td>
-        <td>${esc(it.note)}</td>
-        <td class="text-end">${Number(it.qty||0)}</td>
-        <td class="text-end">
-          <div class="d-inline-flex align-items-center gap-1">
-            <input type="number" min="1" step="1" value="1" class="form-control form-control-sm w-auto" data-qty>
-            <button class="btn btn-sm btn-primary" data-action="in" data-id="${it.id}"><i class="bi bi-plus-lg me-1"></i>Carico</button>
-            <button class="btn btn-sm btn-outline-light" data-action="out" data-id="${it.id}"><i class="bi bi-dash-lg me-1"></i>Scarico</button>
-            <button class="btn btn-sm btn-outline-danger" data-action="del" data-id="${it.id}"><i class="bi bi-trash"></i></button>
-          </div>
-        </td>
-        <td id="tdOwner" class="${currentUser.role==='admin'?'':'d-none'}">${esc((profilesMap.get(it.ownerUid)?.dealer)||it.ownerEmail)}</td>`;
-      tbody.appendChild(tr);
-    }
-    $('#thOwner').classList.toggle('d-none', currentUser.role!=='admin');
-  }
-
-  /* Render Users (admin) */
-  async function renderUsers(){
-    if(currentUser?.role!=='admin') return;
-    const q=$('#uSearch').value.trim().toLowerCase();
-    const rows=(await fetchProfiles()).filter(p=>!q || (p.email||'').toLowerCase().includes(q));
-    const uBody=$('#uBody'); uBody.innerHTML='';
-    for(const u of rows){
-      const tr=document.createElement('tr'); tr.dataset.uid=u.id;
-      const isDisabled = !!u.disabled;
-      tr.innerHTML=`
-        <td>${esc(u.email||u.id)}</td>
-        <td><input class="form-control form-control-sm w-auto d-inline" data-udealer="${esc(u.id)}" value="${esc(u.dealer||'')}" placeholder="Dealer"/></td>
-        <td>
-          <select class="form-select form-select-sm w-auto d-inline" data-urole="${esc(u.id)}">
-            <option value="user" ${u.role==='user'?'selected':''}>User</option>
-            <option value="admin" ${u.role==='admin'?'selected':''}>Admin</option>
-          </select>
-        </td>
-        <td>
-          <div class="form-check form-switch">
-            <input class="form-check-input" type="checkbox" data-udisabled="${esc(u.id)}" ${isDisabled ? 'checked' : ''}>
-            <label class="form-check-label">${isDisabled ? 'Bloccato' : 'Attivo'}</label>
-          </div>
-        </td>
-        <td class="text-end">
-          <button class="btn btn-sm btn-outline-light me-2" data-action="pwreset" data-email="${esc(u.email||'')}"><i class="bi bi-envelope"></i> Reset password</button>
-          <button class="btn btn-sm btn-outline-danger" data-action="deleteUser" data-uid="${esc(u.id)}" ${!isDisabled ? 'disabled title="Blocca prima di eliminare"' : ''}><i class="bi bi-person-x"></i> Elimina</button>
-        </td>`;
-      uBody.appendChild(tr);
-    }
-  }
-
-  /* Render Stats */
-  function renderStats(){
-    if(!currentUser) return;
-    const sOwner=$('#sOwner'); ownerOptions(sOwner);
-    const list=visibleItems($('#sSearch').value, sOwner.value);
-
-    const mapCodes=new Map();
-    for(const it of list){ const key=(it.complete||it.finis||'—'); mapCodes.set(key,(mapCodes.get(key)||0)+Number(it.qty||0)); }
-    const top=[...mapCodes.entries()].sort((a,b)=>b[1]-a[1]).slice(0,12);
-    const labelsTop=top.map(x=>x[0]); const dataTop=top.map(x=>x[1]);
-
-    const mapOwner=new Map();
-    for(const it of list){ const k=it.ownerEmail||'—'; mapOwner.set(k,(mapOwner.get(k)||0)+Number(it.qty||0)); }
-    const labelsOwn=[...mapOwner.keys()], dataOwn=[...mapOwner.values()];
-
-    if(chartTop) chartTop.destroy(); if(chartOwner) chartOwner.destroy();
-    chartTop=new Chart($('#chartTopCodes'),{type:'bar',data:{labels:labelsTop,datasets:[{label:'Qty',data:dataTop}]},options:{plugins:{legend:{display:false}}}});
-    chartOwner=new Chart($('#chartByOwner'),{type:'pie',data:{labels:labelsOwn,datasets:[{label:'Qty',data:dataOwn}]}});
-  }
-
-  /* Event wiring */
-  // login
-  $('#btnLogin').addEventListener('click',()=>doLogin($('#email').value.trim(), $('#password').value));
-  const onEnter=(e)=>{ if(e.key==='Enter') $('#btnLogin').click(); };
-  $('#email').addEventListener('keydown',onEnter); $('#password').addEventListener('keydown',onEnter);
-  $('#btnLogout').addEventListener('click',doLogout);
-
-  // stock
-  $('#search').addEventListener('input',renderStock);
-  $('#filterOwner').addEventListener('change',renderStock);
-  $('#btnAdd').addEventListener('click',addItem);
-  $('#tbody').addEventListener('click',e=>{
-    const b=e.target.closest('button[data-action]'); if(!b) return;
-    const tr=b.closest('tr'); const id=b.dataset.id||tr?.dataset?.id;
-    let v=Number(tr.querySelector('[data-qty]')?.value||1); if(!Number.isFinite(v)||v<1) v=1;
-    if(b.dataset.action==='in')  moveItem(id,+v);
-    if(b.dataset.action==='out') moveItem(id,-v);
-    if(b.dataset.action==='del') deleteItem(id);
-  });
-
-  // users admin
-  document.getElementById('btnCreateUser').addEventListener('click', async ()=>{
-    if(currentUser?.role!=='admin') return;
-    const email=$('#uNewEmail').value.trim();
-    const pass=$('#uNewPassword').value.trim();
-    const role=$('#uNewRole').value; const dealer=$('#uNewDealer').value.trim();
-    const msgEl=$('#uMsg'); msgEl.textContent='';
-    if(!email||!pass){ msgEl.textContent='Email e password sono obbligatorie.'; return; }
-    try{
-      // istanza secondaria per non disturbare la sessione dell'admin
-      const secondary = initializeApp(firebaseConfig, 'secondary');
-      const secondaryAuth = getAuth(secondary);
-      const cred = await createUserWithEmailAndPassword(secondaryAuth, email, pass);
-      await setDoc(doc(db,'profiles',cred.user.uid), { email, role, dealer: dealer || '', disabled: false, createdAt: serverTimestamp() });
-      msgEl.textContent=`Utente creato: ${email}`;
-      await deleteApp(getApp('secondary'));
-    }catch(err){ console.error('CREATE USER ERROR:', err.code, err.message); msgEl.textContent=`Errore creazione: ${err.code}`; }
-    finally{
-      ['uNewEmail','uNewPassword','uNewDealer'].forEach(id=>document.getElementById(id).value='');
-      $('#uNewRole').value='user'; await renderUsers();
-    }
-  });
-
-  document.getElementById('uBody').addEventListener('change', async (e)=>{
-    const sel=e.target.closest('select[data-urole]');
-    if(sel){ await setUserRole(sel.getAttribute('data-urole'), sel.value); return; }
-
-    const chk=e.target.closest('input[data-udisabled]');
-    if(chk){
-      const uid=chk.getAttribute('data-udisabled');
-      try{
-        // Aggiorna stato in Firestore (sempre)
-        await updateDoc(doc(db,'profiles',uid), { disabled: chk.checked });
-        // Se disponibile, sincronizza anche in Auth
-        try{ if(fnSetDisabled) await fnSetDisabled({ uid, disabled: chk.checked }); }catch(_){/* opzionale */}
-        const row=chk.closest('tr');
-        row.querySelector('.form-check-label').textContent = chk.checked ? 'Bloccato' : 'Attivo';
-        const delBtn=row.querySelector('button[data-action="deleteUser"]');
-        if(delBtn){ delBtn.disabled=!chk.checked; delBtn.title = chk.checked ? '' : 'Blocca prima di eliminare'; }
-      }catch(err){ console.error('DISABLE USER ERROR:', err.code, err.message); alert('Permesso negato nel cambiare stato.'); chk.checked=!chk.checked; }
-    }
-  });
-
-  document.getElementById('uBody').addEventListener('input', async (e)=>{
-    const inp=e.target.closest('input[data-udealer]'); if(!inp) return; const uid=inp.getAttribute('data-udealer');
-    clearTimeout(inp._t);
-    inp._t=setTimeout(async()=>{ try{ await updateDoc(doc(db,'profiles',uid), { dealer: inp.value.trim() }); }catch(err){ console.error('UPDATE DEALER ERROR:', err.code, err.message); alert('Impossibile aggiornare Dealer.'); } },400);
-  });
-
-  document.getElementById('uBody').addEventListener('click', async (e)=>{
-    const b=e.target.closest('button[data-action]'); if(!b) return;
-
-    if (b.dataset.action==='pwreset'){
-      const email=b.getAttribute('data-email');
-      try{ await sendPasswordResetEmail(auth, email); alert(`Email inviata a: ${email}`); }
-      catch(err){ console.error('PW RESET ERROR:', err.code, err.message); alert(`Errore invio email: ${err.code}`); }
-      return;
-    }
-
-    if (b.dataset.action==='deleteUser'){
-      const uid=b.getAttribute('data-uid');
-      if(!confirm('Eliminare definitivamente questa utenza?')) return;
-      try{
-        try{ if(fnDeleteUser) await fnDeleteUser({ uid }); }catch(_){ /* opzionale */ }
-        await deleteDoc(doc(db,'profiles',uid));
-        await renderUsers();
-        alert('Utenza eliminata (profilo). Se hai la Cloud Function, è stata rimossa anche da Authentication.');
-      }catch(err){ console.error('DELETE AUTH USER ERROR:', err); alert(`Errore eliminazione utente: ${err.message || err}`); }
-    }
-  });
-
-  // stats
-  $('#sApply').addEventListener('click', renderStats);
-
-  // avvio
-  document.getElementById('page-auth').classList.remove('d-none');
-</script>
+    // avvio
+    showOnly('page-auth');
+  </script>
 </body>
 </html>
