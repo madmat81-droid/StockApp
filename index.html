@@ -116,7 +116,7 @@
               <th>Note</th>
               <th class="text-end">Qty</th>
               <th class="text-end">Azioni</th>
-              <th id="thOwner" class="d-none">Owner</th>
+              <th id="thOwner" class="d-none">Dealer</th>
             </tr>
           </thead>
           <tbody id="tbody"></tbody>
@@ -209,6 +209,8 @@
   let currentUser = null; // { uid, email, role, dealer, disabled }
   let itemsCache  = [];
   let chartTop=null, chartOwner=null;
+  // mappa profili per accesso rapido (uid -> {email, dealer, role, disabled})
+  let profilesMap = new Map();
 
   const $  = s => document.querySelector(s);
   const $$ = s => document.querySelectorAll(s);
@@ -291,6 +293,12 @@
     }
     const snap = await getDocs(qRef);
     itemsCache = snap.docs.map(d=>({ id:d.id, ...d.data() }));
+
+    // se admin, carica anche i profili per mostrare il Dealer
+    if(currentUser.role==='admin'){
+      const ps = await getDocs(collection(db,'profiles'));
+      profilesMap = new Map(ps.docs.map(d=>[d.id, d.data()]));
+    }
     renderStock(); renderStats();
   }
 
@@ -428,7 +436,7 @@
             <button class="btn btn-sm btn-outline-danger" data-action="del" data-id="${it.id}"><i class="bi bi-trash"></i></button>
           </div>
         </td>
-        <td id="tdOwner" class="${currentUser.role==='admin'?'':'d-none'}">${esc(it.ownerEmail)}</td>`;
+        <td id="tdOwner" class="${currentUser.role==='admin'?'':'d-none'}">${esc((profilesMap.get(it.ownerUid)?.dealer)||it.ownerEmail)}</td>`;
       tbody.appendChild(tr);
     }
     $('#thOwner').classList.toggle('d-none', currentUser.role!=='admin');
