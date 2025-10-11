@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>StockApp (Static SPA)</title>
+<title>StockApp</title>
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"/>
 <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet"/>
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.3/dist/chart.umd.min.js"></script>
@@ -32,7 +32,7 @@ a.nav-link.active{color:#fff}
       <span class="navbar-toggler-icon"></span>
     </button>
     <div id="navCollapse" class="collapse navbar-collapse">
-      <ul class="navbar-nav me-auto ms-3 gap-2" id="mainNav">
+      <ul class="navbar-nav me-auto ms-3 gap-2">
         <li class="nav-item"><a class="nav-link" href="#/stock"><i class="bi bi-grid-3x3-gap me-1"></i>Stock</a></li>
         <li class="nav-item"><a class="nav-link" href="#/stats"><i class="bi bi-graph-up me-1"></i>Statistiche</a></li>
         <li class="nav-item d-none" id="navUsers"><a class="nav-link" href="#/users"><i class="bi bi-people me-1"></i>Utenti</a></li>
@@ -49,32 +49,32 @@ a.nav-link.active{color:#fff}
 
 <main class="container py-4">
 
-  <!-- AUTH -->
+  <!-- LOGIN -->
   <section id="page-auth" class="card mb-4">
     <div class="card-body">
       <h3 class="h5 mb-3">Accesso</h3>
       <div class="row g-2 align-items-end">
         <div class="col-md-4">
           <label class="form-label">Email</label>
-          <input id="email" class="form-control" placeholder="admin@example.com" autocomplete="username"/>
+          <input id="email" class="form-control" autocomplete="username" placeholder="you@example.com"/>
         </div>
         <div class="col-md-4">
           <label class="form-label">Password</label>
-          <input id="password" type="password" class="form-control" placeholder="••••••" autocomplete="current-password"/>
+          <input id="password" type="password" class="form-control" autocomplete="current-password" placeholder="••••••"/>
         </div>
         <div class="col-md-4">
           <button id="btnLogin" class="btn btn-primary w-100" type="button">
             <i class="bi bi-box-arrow-in-right me-1"></i>Entra
           </button>
           <small class="muted d-block mt-2">
-            Admin → <code>admin@example.com / admin</code> · User → <code>user1@example.com / user</code>
+            Gli utenti si creano in <strong>Firebase → Authentication</strong>. I ruoli si impostano in <strong>Firestore → profiles</strong>.
           </small>
         </div>
       </div>
     </div>
   </section>
 
-  <!-- DASHBOARD (metrica sintetica) -->
+  <!-- DASHBOARD -->
   <section id="page-dash" class="row g-3 d-none">
     <div class="col-md-6">
       <div class="card h-100"><div class="card-body d-flex align-items-center">
@@ -101,12 +101,10 @@ a.nav-link.active{color:#fff}
         <h3 class="h5 me-auto mb-0">Magazzino</h3>
         <input id="search" class="form-control" placeholder="Cerca Finis/Complete/Descrizione/Note" style="max-width:380px"/>
         <select id="filterOwner" class="form-select d-none" style="max-width:220px"></select>
-        <a id="quickUsers" href="#/users" class="btn btn-outline-light d-none">
-          <i class="bi bi-people me-1"></i> Gestisci utenti
-        </a>
+        <a id="quickUsers" href="#/users" class="btn btn-outline-light d-none"><i class="bi bi-people me-1"></i>Gestisci utenti</a>
       </div>
 
-      <div id="addBar" class="mb-3">
+      <div class="mb-3">
         <div class="row g-2">
           <div class="col-lg-2"><input id="newFinis" class="form-control" placeholder="Finis Code"/></div>
           <div class="col-lg-2"><input id="newComplete" class="form-control" placeholder="Complete Code"/></div>
@@ -114,7 +112,7 @@ a.nav-link.active{color:#fff}
           <div class="col-lg-3"><input id="newNote" class="form-control" placeholder="Note"/></div>
           <div class="col-lg-2 d-grid"><button id="btnAdd" class="btn btn-success" type="button"><i class="bi bi-plus-lg me-1"></i>Aggiungi</button></div>
         </div>
-        <div class="muted small mt-1">I nuovi record saranno di: <span id="ownerHint"></span></div>
+        <div class="muted small mt-1">I nuovi record saranno di: <span id="ownerHint">—</span></div>
       </div>
 
       <div class="table-responsive">
@@ -133,13 +131,6 @@ a.nav-link.active{color:#fff}
           <tbody id="tbody"></tbody>
         </table>
       </div>
-
-      <div class="d-flex gap-2">
-        <button id="btnExport" class="btn btn-outline-light" type="button"><i class="bi bi-download me-1"></i>Esporta JSON</button>
-        <label class="btn btn-outline-light mb-0">
-          <i class="bi bi-upload me-1"></i>Importa JSON <input id="fileImport" type="file" accept="application/json" hidden>
-        </label>
-      </div>
     </div>
   </section>
 
@@ -150,21 +141,13 @@ a.nav-link.active{color:#fff}
         <h3 class="h5 me-auto mb-0">Gestione Utenti</h3>
         <input id="uSearch" class="form-control" placeholder="Cerca email" style="max-width:320px"/>
       </div>
-      <div class="row g-2 mb-3">
-        <div class="col-lg-4"><input id="uEmail" class="form-control" placeholder="email@dominio.it"/></div>
-        <div class="col-lg-3"><input id="uPassword" class="form-control" placeholder="password"/></div>
-        <div class="col-lg-3">
-          <select id="uRole" class="form-select"><option value="user">User</option><option value="admin">Admin</option></select>
-        </div>
-        <div class="col-lg-2 d-grid"><button id="btnAddUser" class="btn btn-success" type="button"><i class="bi bi-person-plus me-1"></i>Aggiungi</button></div>
-      </div>
       <div class="table-responsive">
         <table class="table table-dark table-striped align-middle">
           <thead><tr><th>Email</th><th>Ruolo</th><th class="text-end">Azioni</th></tr></thead>
           <tbody id="uBody"></tbody>
         </table>
       </div>
-      <div class="muted small">⚠️ Demo: utenti in localStorage.</div>
+      <div class="muted small">Gli utenti si aggiungono/eliminano da <strong>Authentication</strong>. Qui gestisci <strong>solo i ruoli</strong>.</div>
     </div>
   </section>
 
@@ -192,120 +175,163 @@ a.nav-link.active{color:#fff}
 
 </main>
 
+<!-- ===== APP (Firebase) ===== -->
 <script type="module">
-/* ---------- STATE & STORAGE ---------- */
-const LS_ITEMS='stockapp.items.v4';
-const LS_USERS='stockapp.users.v1';
-let state={user:null,items:[],users:[]};
-const uid=()=>Math.random().toString(36).slice(2,10);
-const byEmail=e=>(e||'').trim().toLowerCase();
-const esc=s=>(s??'').toString().replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]}));
+/* --- Firebase SDK --- */
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-app.js";
+import { getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-auth.js";
+import { getFirestore, collection, doc, getDoc, getDocs, setDoc, updateDoc, addDoc, query, where, orderBy, runTransaction, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-firestore.js";
 
-function loadItems(){try{state.items=JSON.parse(localStorage.getItem(LS_ITEMS)||'[]');}catch{state.items=[];}}
-function saveItems(){localStorage.setItem(LS_ITEMS,JSON.stringify(state.items));}
-function loadUsers(){try{state.users=JSON.parse(localStorage.getItem(LS_USERS)||'[]');}catch{state.users=[];}}
-function saveUsers(){localStorage.setItem(LS_USERS,JSON.stringify(state.users));}
-function ensureSeedUsers(){
-  loadUsers();
-  if(state.users.length===0){
-    state.users=[{email:'admin@example.com',pass:'admin',role:'admin'},{email:'user1@example.com',pass:'user',role:'user'}];
-    saveUsers();
+/* --- INCOLLA QUI LA TUA CONFIG --- */
+const firebaseConfig = {
+  apiKey: "AIzaSyABezXPgHhyvPknItXGyuvA-vKozNw6_qw",
+  authDomain: "stockappdb-2420d.firebaseapp.com",
+  projectId: "stockappdb-2420d",
+  messagingSenderId: "856091877639",
+  storageBucket: "stockappdb-2420d.appspot.com"
+  // appId è facoltativo per la nostra SPA; se la console te lo mostra, puoi aggiungerlo qui.
+};
+/* ---------------------------------- */
+
+const app  = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const db   = getFirestore(app);
+
+/* --- Stato --- */
+let currentUser = null;        // { uid, email, role }
+let itemsCache  = [];          // [{id,...}]
+let charts = { top:null, owner:null };
+
+const $ = (s)=>document.querySelector(s);
+const $$= (s)=>document.querySelectorAll(s);
+const esc = s => (s??'').toString().replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]}));
+const byEmail = e => (e||'').trim().toLowerCase();
+
+/* --- Auth + profili --- */
+async function ensureProfile(uid, email){
+  const ref = doc(db, "profiles", uid);
+  const snap = await getDoc(ref);
+  if(!snap.exists()){
+    await setDoc(ref, { email, role:"user", createdAt: serverTimestamp() });
+    return { email, role:"user" };
   }
+  return snap.data();
 }
-
-/* ---------- AUTH ---------- */
-function login(email,pw){
-  ensureSeedUsers();
-  const u=state.users.find(x=>byEmail(x.email)===byEmail(email));
-  if(!u||u.pass!==pw){alert('Credenziali non valide');return;}
-  state.user={email:u.email,role:u.role};
-  loadItems();
-  renderNav();
-  location.hash = location.hash || '#/stock';
-  routeTo(location.hash);
+async function doLogin(email, password){
+  const cred = await signInWithEmailAndPassword(auth, email, password);
+  const prof = await ensureProfile(cred.user.uid, cred.user.email || email);
+  currentUser = { uid: cred.user.uid, email: cred.user.email || email, role: prof.role };
+  renderNav(); routeTo(location.hash || "#/stock"); await refreshAll();
 }
-function logout(){
-  state.user=null;
-  renderNav();
-  routeTo('#/stock');
-  document.getElementById('page-auth').classList.remove('d-none');
-}
+async function doLogout(){ await signOut(auth); currentUser=null; renderNav(); showOnly('page-auth'); }
 
-/* ---------- NAV BAR / ROUTING ---------- */
-function renderNav(){
-  const info=document.getElementById('userInfo');
-  const out=document.getElementById('btnLogout');
-  const navUsers=document.getElementById('navUsers');
-  const quickUsers=document.getElementById('quickUsers');
+onAuthStateChanged(auth, async u=>{
+  if(!u){ currentUser=null; renderNav(); showOnly('page-auth'); return; }
+  const prof = await ensureProfile(u.uid, u.email);
+  currentUser = { uid: u.uid, email: u.email, role: prof.role };
+  renderNav(); routeTo(location.hash || "#/stock"); await refreshAll();
+});
 
-  if(!state.user){
-    info.classList.add('d-none'); out.classList.add('d-none');
-    navUsers.classList.add('d-none'); quickUsers.classList.add('d-none');
-    return;
+/* --- Items --- */
+async function fetchItems(){
+  if(!currentUser) return;
+  let qRef;
+  if(currentUser.role==='admin'){
+    qRef = query(collection(db,"items"), orderBy("createdAt","desc"));
+  } else {
+    qRef = query(collection(db,"items"), where("ownerUid","==",currentUser.uid), orderBy("createdAt","desc"));
   }
-  info.textContent=`${state.user.email} • ${state.user.role}`;
-  info.classList.remove('d-none'); out.classList.remove('d-none');
-  const isAdmin = state.user.role==='admin';
-  navUsers.classList.toggle('d-none', !isAdmin);
-  quickUsers.classList.toggle('d-none', !isAdmin);
+  const snap = await getDocs(qRef);
+  itemsCache = snap.docs.map(d=>({ id:d.id, ...d.data() }));
+  renderStock(); renderStats();
 }
-function setActive(hash){
-  document.querySelectorAll('.nav-link').forEach(a=>a.classList.remove('active'));
-  const link=document.querySelector(`.nav-link[href="${hash}"]`);
-  if(link) link.classList.add('active');
-}
-function showOnly(...ids){
-  ['page-auth','page-dash','page-stock','page-users','page-stats'].forEach(id=>{
-    document.getElementById(id).classList.add('d-none');
+async function addItem(){
+  const finis=$('#newFinis').value.trim();
+  const complete=$('#newComplete').value.trim();
+  const desc=$('#newDesc').value.trim();
+  const note=$('#newNote').value.trim();
+  if(!finis && !complete){ alert('Inserisci almeno Finis o Complete'); return; }
+  await addDoc(collection(db,"items"), {
+    ownerUid: currentUser.uid, ownerEmail: currentUser.email,
+    finis, complete, desc, note, qty: 0, createdAt: serverTimestamp()
   });
-  ids.forEach(id=>document.getElementById(id).classList.remove('d-none'));
+  ['#newFinis','#newComplete','#newDesc','#newNote'].forEach(s=>$(s).value='');
+  await fetchItems();
 }
+async function moveItem(id, delta){
+  const ref = doc(db,"items",id);
+  await runTransaction(db, async tx=>{
+    const snap = await tx.get(ref); if(!snap.exists()) return;
+    const it = snap.data();
+    if(currentUser.role!=='admin' && it.ownerUid!==currentUser.uid) throw new Error('Non autorizzato');
+    const next = Math.max(0, Number(it.qty||0)+Number(delta||0));
+    tx.update(ref, { qty: next });
+  });
+  await fetchItems();
+}
+
+/* --- Profili (admin) --- */
+async function fetchProfiles(){
+  if(currentUser?.role!=='admin') return [];
+  const snap = await getDocs(collection(db,"profiles"));
+  return snap.docs.map(d=>({ id:d.id, ...d.data() })).sort((a,b)=> (a.email||'').localeCompare(b.email||''));
+}
+async function setUserRole(uid, role){
+  if(currentUser?.role!=='admin') return;
+  await updateDoc(doc(db,"profiles",uid), { role });
+  if(uid===currentUser.uid){ currentUser.role=role; renderNav(); } // se cambio me stesso
+  await renderUsers();
+}
+
+/* --- Router/UI comuni --- */
+function renderNav(){
+  const info=$('#userInfo'), out=$('#btnLogout'), navUsers=$('#navUsers'), quick=$('#quickUsers');
+  if(!currentUser){ info.classList.add('d-none'); out.classList.add('d-none'); navUsers.classList.add('d-none'); quick.classList.add('d-none'); return; }
+  info.textContent = `${currentUser.email} • ${currentUser.role}`;
+  info.classList.remove('d-none'); out.classList.remove('d-none');
+  const isAdmin=currentUser.role==='admin';
+  navUsers.classList.toggle('d-none', !isAdmin);
+  quick.classList.toggle('d-none', !isAdmin);
+}
+function setActive(hash){ $$('.nav-link').forEach(a=>a.classList.remove('active')); const l=document.querySelector(`.nav-link[href="${hash}"]`); if(l) l.classList.add('active'); }
+function showOnly(...ids){ ['page-auth','page-dash','page-stock','page-users','page-stats'].forEach(id=>$('#'+id).classList.add('d-none')); ids.forEach(id=>$('#'+id).classList.remove('d-none')); }
 function routeTo(hash){
-  if(!state.user){ showOnly('page-auth'); setActive(''); return; }
-  if(hash==='#/users' && state.user.role!=='admin'){ hash='#/stock'; }
+  if(!currentUser){ showOnly('page-auth'); setActive(''); return; }
+  if(hash==='#/users' && currentUser.role!=='admin'){ hash='#/stock'; }
   if(hash==='#/stock'){ showOnly('page-dash','page-stock'); renderStock(); setActive('#/stock'); }
   if(hash==='#/stats'){ showOnly('page-stats'); renderStats(); setActive('#/stats'); }
   if(hash==='#/users'){ showOnly('page-users'); renderUsers(); setActive('#/users'); }
 }
 window.addEventListener('hashchange',()=>routeTo(location.hash));
+async function refreshAll(){ await fetchItems(); await renderUsers(); renderStats(); }
 
-/* ---------- DATA HELPERS ---------- */
+/* --- Helpers dati/filtri --- */
+function ownerOptions(selectEl){
+  if(currentUser.role!=='admin'){ selectEl.classList.add('d-none'); return; }
+  const owners=[...new Set(itemsCache.map(x=>byEmail(x.ownerEmail)).filter(Boolean))].sort();
+  selectEl.innerHTML=`<option value="__auto__">— Filtro Owner (auto) —</option><option value="__all__">Tutti</option>` + owners.map(o=>`<option value="${o}">${o}</option>`).join('');
+  selectEl.classList.remove('d-none');
+}
 function visibleItems(text='', ownerSel='__auto__'){
-  let arr=state.items;
-  if(state.user.role!=='admin'){
-    arr = arr.filter(r=>byEmail(r.owner)===byEmail(state.user.email));
-  } else if(ownerSel && ownerSel!=='__auto__' && ownerSel!=='__all__'){
-    arr = arr.filter(r=>byEmail(r.owner)===byEmail(ownerSel));
-  }
+  let arr=itemsCache;
+  if(currentUser.role!=='admin'){ arr=arr.filter(r=>byEmail(r.ownerEmail)===byEmail(currentUser.email)); }
+  else if(ownerSel && ownerSel!=='__auto__' && ownerSel!=='__all__'){ arr=arr.filter(r=>byEmail(r.ownerEmail)===byEmail(ownerSel)); }
   const q=(text||'').toLowerCase();
-  if(q){
-    arr=arr.filter(r=>(r.finis||'').toLowerCase().includes(q)||
-                       (r.complete||'').toLowerCase().includes(q)||
-                       (r.desc||'').toLowerCase().includes(q)||
-                       (r.note||'').toLowerCase().includes(q));
-  }
+  if(q){ arr=arr.filter(r=>(r.finis||'').toLowerCase().includes(q)||(r.complete||'').toLowerCase().includes(q)||(r.desc||'').toLowerCase().includes(q)||(r.note||'').toLowerCase().includes(q)); }
   return arr;
 }
-function metrics(arr){return{totalItems:arr.length,totalQty:arr.reduce((a,b)=>a+Math.max(0,Number(b.qty||0)),0)}}
-function ensureOwnerOptions(sel){
-  if(state.user?.role!=='admin'){ sel.classList.add('d-none'); return; }
-  const owners=[...new Set(state.items.map(x=>byEmail(x.owner)).filter(Boolean))].sort();
-  sel.innerHTML=`<option value="__auto__">— Filtro Owner (auto) —</option><option value="__all__">Tutti</option>` + owners.map(o=>`<option value="${o}">${o}</option>`).join('');
-  sel.classList.remove('d-none');
-}
+function metrics(arr){return{ totalItems:arr.length, totalQty:arr.reduce((a,b)=>a+Number(b.qty||0),0) }}
 
-/* ---------- RENDER: STOCK ---------- */
+/* --- Render Stock --- */
 function renderStock(){
-  document.getElementById('ownerHint').textContent = state.user?.email || '-';
-  ensureOwnerOptions(document.getElementById('filterOwner'));
+  if(!currentUser) return;
+  $('#ownerHint').textContent=currentUser.email;
+  ownerOptions($('#filterOwner'));
+  const list=visibleItems($('#search').value, $('#filterOwner').value);
+  const {totalItems,totalQty}=metrics(list);
+  $('#metricItems').textContent=totalItems; $('#metricQty').textContent=totalQty;
 
-  const list = visibleItems(document.getElementById('search').value, document.getElementById('filterOwner').value);
-  const {totalItems,totalQty} = metrics(list);
-  document.getElementById('page-dash').classList.remove('d-none');
-  document.getElementById('metricItems').textContent = totalItems;
-  document.getElementById('metricQty').textContent   = totalQty;
-
-  const tbody=document.getElementById('tbody'); tbody.innerHTML='';
+  const tbody=$('#tbody'); tbody.innerHTML='';
   for(const it of list){
     const tr=document.createElement('tr'); tr.dataset.id=it.id;
     tr.innerHTML=`
@@ -317,152 +343,86 @@ function renderStock(){
       <td class="text-end">
         <div class="d-inline-flex align-items-center gap-1">
           <input type="number" min="1" step="1" value="1" class="form-control form-control-sm w-auto" data-qty>
-          <button class="btn btn-sm btn-primary" data-action="in"  data-id="${it.id}"><i class="bi bi-plus-lg me-1"></i>Carico</button>
+          <button class="btn btn-sm btn-primary" data-action="in" data-id="${it.id}"><i class="bi bi-plus-lg me-1"></i>Carico</button>
           <button class="btn btn-sm btn-outline-light" data-action="out" data-id="${it.id}"><i class="bi bi-dash-lg me-1"></i>Scarico</button>
         </div>
       </td>
-      <td id="tdOwner" class="${state.user.role==='admin'?'':'d-none'}">${esc(it.owner)}</td>`;
+      <td id="tdOwner" class="${currentUser.role==='admin'?'':'d-none'}">${esc(it.ownerEmail)}</td>`;
     tbody.appendChild(tr);
   }
-  document.getElementById('thOwner').classList.toggle('d-none', state.user.role!=='admin');
+  $('#thOwner').classList.toggle('d-none', currentUser.role!=='admin');
 }
 
-/* ---------- RENDER: USERS (ADMIN) ---------- */
-function renderUsers(){
-  if(state.user?.role!=='admin') return;
-  loadUsers();
-  const q=document.getElementById('uSearch').value.trim().toLowerCase();
-  const rows=state.users.filter(u=>!q||u.email.toLowerCase().includes(q)).sort((a,b)=>a.email.localeCompare(b.email));
-  const uBody=document.getElementById('uBody'); uBody.innerHTML='';
+/* --- Render Users (admin) --- */
+async function renderUsers(){
+  if(currentUser?.role!=='admin') return;
+  const q=$('#uSearch').value.trim().toLowerCase();
+  const rows=(await fetchProfiles()).filter(p=>!q || (p.email||'').toLowerCase().includes(q));
+  const uBody=$('#uBody'); uBody.innerHTML='';
   for(const u of rows){
-    const tr=document.createElement('tr'); tr.dataset.email=u.email;
+    const tr=document.createElement('tr'); tr.dataset.uid=u.id;
     tr.innerHTML=`
-      <td>${esc(u.email)}</td>
+      <td>${esc(u.email||u.id)}</td>
       <td>
-        <select class="form-select form-select-sm w-auto d-inline" data-urole="${esc(u.email)}">
+        <select class="form-select form-select-sm w-auto d-inline" data-urole="${esc(u.id)}">
           <option value="user" ${u.role==='user'?'selected':''}>User</option>
           <option value="admin" ${u.role==='admin'?'selected':''}>Admin</option>
         </select>
       </td>
-      <td class="text-end">
-        <button class="btn btn-sm btn-outline-light me-1" data-action="reset" data-email="${esc(u.email)}"><i class="bi bi-key"></i> Reset PW</button>
-        <button class="btn btn-sm btn-outline-danger" data-action="del" data-email="${esc(u.email)}"><i class="bi bi-trash"></i> Elimina</button>
-      </td>`;
+      <td class="text-end"><span class="muted small">Password: da Firebase Console</span></td>`;
     uBody.appendChild(tr);
   }
 }
 
-/* ---------- RENDER: STATS ---------- */
+/* --- Render Stats --- */
 let chartTop=null, chartOwner=null;
 function renderStats(){
-  const sOwner=document.getElementById('sOwner');
-  ensureOwnerOptions(sOwner);
-  const list=visibleItems(document.getElementById('sSearch').value, sOwner.value);
+  if(!currentUser) return;
+  // owner filter (admin)
+  const sOwner=$('#sOwner'); ownerOptions(sOwner);
+  const list=visibleItems($('#sSearch').value, sOwner.value);
 
-  const mapCodes=new Map();
-  for(const it of list){
-    const key=(it.complete||it.finis||'—');
-    mapCodes.set(key,(mapCodes.get(key)||0)+Number(it.qty||0));
-  }
-  const top=[...mapCodes.entries()].sort((a,b)=>b[1]-a[1]).slice(0,12);
+  // top codes
+  const m=new Map();
+  for(const it of list){ const key=(it.complete||it.finis||'—'); m.set(key,(m.get(key)||0)+Number(it.qty||0)); }
+  const top=[...m.entries()].sort((a,b)=>b[1]-a[1]).slice(0,12);
   const labelsTop=top.map(x=>x[0]); const dataTop=top.map(x=>x[1]);
 
-  const mapOwner=new Map();
-  for(const it of list){
-    const key=it.owner||'—';
-    mapOwner.set(key,(mapOwner.get(key)||0)+Number(it.qty||0));
-  }
-  const labelsOwn=[...mapOwner.keys()], dataOwn=[...mapOwner.values()];
+  // by owner
+  const mo=new Map();
+  for(const it of list){ const k=it.ownerEmail||'—'; mo.set(k,(mo.get(k)||0)+Number(it.qty||0)); }
+  const labelsOwn=[...mo.keys()], dataOwn=[...mo.values()];
 
   if(chartTop) chartTop.destroy(); if(chartOwner) chartOwner.destroy();
-  chartTop = new Chart(document.getElementById('chartTopCodes'), {type:'bar',data:{labels:labelsTop,datasets:[{label:'Qty',data:dataTop}]},options:{plugins:{legend:{display:false}}}});
-  chartOwner = new Chart(document.getElementById('chartByOwner'), {type:'pie',data:{labels:labelsOwn,datasets:[{label:'Qty',data:dataOwn}]}} );
+  chartTop=new Chart($('#chartTopCodes'),{type:'bar',data:{labels:labelsTop,datasets:[{label:'Qty',data:dataTop}]},options:{plugins:{legend:{display:false}}}});
+  chartOwner=new Chart($('#chartByOwner'),{type:'pie',data:{labels:labelsOwn,datasets:[{label:'Qty',data:dataOwn}]}})
 }
 
-/* ---------- ACTIONS ---------- */
-function addItem(){
-  const finis=document.getElementById('newFinis').value.trim();
-  const complete=document.getElementById('newComplete').value.trim();
-  const desc=document.getElementById('newDesc').value.trim();
-  const note=document.getElementById('newNote').value.trim();
-  if(!finis && !complete){alert('Inserisci almeno Finis o Complete Code'); return;}
-  state.items.push({id:uid(),owner:state.user.email,finis,complete,desc,note,qty:0,createdAt:Date.now()});
-  saveItems();
-  ['newFinis','newComplete','newDesc','newNote'].forEach(id=>document.getElementById(id).value='');
-  renderStock(); renderStats();
-}
-function moveItem(id,delta){
-  const i=state.items.findIndex(r=>r.id===id); if(i<0) return;
-  const isOwner=byEmail(state.items[i].owner)===byEmail(state.user.email);
-  if(state.user.role!=='admin' && !isOwner){alert('Puoi modificare solo i tuoi record.');return;}
-  state.items[i].qty=Math.max(0,Number(state.items[i].qty||0)+Number(delta||0));
-  saveItems(); renderStock(); renderStats();
-}
+/* --- Event wiring --- */
+$('#btnLogin').addEventListener('click',()=>doLogin($('#email').value,$('#password').value));
+$('#btnLogout').addEventListener('click',doLogout);
+window.addEventListener('hashchange',()=>routeTo(location.hash));
 
-/* ---------- BOOT & EVENTS ---------- */
-ensureSeedUsers();
-document.getElementById('btnLogin').addEventListener('click',()=>login(
-  document.getElementById('email').value, document.getElementById('password').value
-));
-document.getElementById('btnLogout').addEventListener('click',logout);
-
-// stock
-document.getElementById('search').addEventListener('input',renderStock);
-document.getElementById('filterOwner').addEventListener('change',renderStock);
-document.getElementById('btnAdd').addEventListener('click',addItem);
-document.getElementById('tbody').addEventListener('click',e=>{
+$('#search').addEventListener('input',renderStock);
+$('#filterOwner').addEventListener('change',renderStock);
+$('#btnAdd').addEventListener('click',addItem);
+$('#tbody').addEventListener('click',e=>{
   const b=e.target.closest('button[data-action]'); if(!b) return;
   const tr=b.closest('tr'); const id=b.dataset.id||tr?.dataset?.id;
   let v=Number(tr.querySelector('[data-qty]')?.value||1); if(!Number.isFinite(v)||v<1) v=1;
-  if(b.dataset.action==='in') moveItem(id,+v);
+  if(b.dataset.action==='in')  moveItem(id,+v);
   if(b.dataset.action==='out') moveItem(id,-v);
 });
-document.getElementById('btnExport').addEventListener('click',()=>{
-  const blob=new Blob([JSON.stringify(state.items,null,2)],{type:'application/json'});
-  const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download='stockapp_export.json'; a.click(); URL.revokeObjectURL(a.href);
-});
-document.getElementById('fileImport').addEventListener('change',e=>{
-  const f=e.target.files?.[0]; if(!f) return;
-  const rd=new FileReader(); rd.onload=ev=>{
-    try{
-      const arr=JSON.parse(ev.target.result); if(!Array.isArray(arr)) throw 0;
-      state.items=arr.map(x=>({id:x.id||uid(),owner:byEmail(x.owner||''),finis:x.finis||'',complete:x.complete||'',desc:x.desc||x.description||'',note:x.note||'',qty:Math.max(0,Number(x.qty||0)),createdAt:x.createdAt||Date.now()}));
-      saveItems(); renderStock(); renderStats();
-    }catch{ alert('JSON non valido'); }
-  }; rd.readAsText(f); e.target.value='';
-});
 
-// users
-document.getElementById('btnAddUser').addEventListener('click',()=>{
-  loadUsers();
-  const email=byEmail(document.getElementById('uEmail').value);
-  const pass=document.getElementById('uPassword').value.trim();
-  const role=document.getElementById('uRole').value;
-  if(!email||!pass) return alert('Email e password richieste');
-  if(state.users.some(u=>byEmail(u.email)===email)) return alert('Utente già presente');
-  state.users.push({email,pass,role}); saveUsers();
-  document.getElementById('uEmail').value=''; document.getElementById('uPassword').value=''; document.getElementById('uRole').value='user';
-  renderUsers();
-});
-document.getElementById('uSearch').addEventListener('input',renderUsers);
-document.getElementById('uBody').addEventListener('change',e=>{
+$('#uSearch').addEventListener('input',renderUsers);
+document.getElementById('uBody').addEventListener('change',async e=>{
   const sel=e.target.closest('select[data-urole]'); if(!sel) return;
-  loadUsers(); const em=byEmail(sel.getAttribute('data-urole')); const u=state.users.find(x=>byEmail(x.email)===em);
-  if(!u) return; u.role=sel.value; saveUsers(); if(state.user && byEmail(state.user.email)===em){state.user.role=u.role; renderNav();}
-  renderUsers(); renderNav();
-});
-document.getElementById('uBody').addEventListener('click',e=>{
-  const b=e.target.closest('button[data-action]'); if(!b) return;
-  const email=b.getAttribute('data-email'); loadUsers();
-  if(b.dataset.action==='reset'){ const pw=prompt(`Nuova password per ${email}:`,''); if(pw && pw.trim()){const u=state.users.find(x=>byEmail(x.email)===byEmail(email)); if(u){u.pass=pw.trim(); saveUsers(); alert('Password aggiornata.');}}}
-  if(b.dataset.action==='del'){ if(!confirm(`Eliminare ${email}?`)) return; state.users=state.users.filter(x=>byEmail(x.email)!==byEmail(email)); saveUsers(); if(state.user && byEmail(state.user.email)===byEmail(email)){state.user=null; renderNav(); routeTo('#/stock');} renderUsers();}
+  await setUserRole(sel.getAttribute('data-urole'), sel.value);
 });
 
-// stats
-document.getElementById('sApply').addEventListener('click',renderStats);
+$('#sApply').addEventListener('click',renderStats);
 
-// primo render
-renderNav();
+// start: mostra login, il resto parte su onAuthStateChanged
 document.getElementById('page-auth').classList.remove('d-none');
 </script>
 </body>
