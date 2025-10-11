@@ -9,7 +9,7 @@
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.3/dist/chart.umd.min.js"></script>
   <style>
     :root{--bg:#0a0c10;--panel:#131622;--muted:#9aa3af;--border:#1f2330;--primary:#3b82f6;--accent:#10b981;--ford:#003DA5}
-    body{background:var(--bg);color:#e8eaee;margin:0;padding:0}
+    body{background:var(--bg);color:#e8eaee;margin:0;padding:0;overflow-x:hidden}
     .navbar{background:#0f121b}
     .card{background:var(--panel);border:1px solid var(--border);border-radius:16px}
     .form-control,.form-select{background:#0e1220;color:#e8eaee;border-color:#1e2432}
@@ -25,13 +25,14 @@
     /* ---- Login split full-viewport ---- */
     body.auth-mode{background:#000}
     body.auth-mode nav{display:none}
-    #page-auth{padding:0;margin:0;min-height:100vh}
-    .login-split{width:100vw;display:grid;grid-template-columns:1fr 1fr;min-height:100vh}
+    #page-auth{padding:0;margin:0;min-height:100vh;width:100vw;margin-left:calc(50% - 50vw);margin-right:calc(50% - 50vw)}
+    .login-split{width:100%;display:grid;grid-template-columns:1fr 1fr;min-height:100vh}
     .login-left{background:#ffffff;color:#0b1220;display:flex;flex-direction:column;justify-content:flex-start;align-items:center;padding:48px}
     .login-header{margin-top:40px;text-align:center}
     .app-title{font-weight:900;color:var(--ford);font-size:clamp(40px,6vw,72px);line-height:1;margin-bottom:48px}
     .brand-logo{max-width:320px;height:auto;margin:0 auto 32px auto;display:block}
     .login-box{width:100%;max-width:480px;margin-top:24px}
+    .login-left .card{background:#ffffff;color:#0b1220}
     .login-left .form-control{background:#ffffff;color:#0b1220;border-color:#d8dee9}
     .login-left .form-control:focus{border-color:var(--ford);box-shadow:0 0 0 .25rem rgba(0,61,165,.15)}
     .login-right{background:radial-gradient(ellipse at 20% 10%, rgba(0,0,0,.35), rgba(0,0,0,.65)), url('assets/bg.jpg') center/cover no-repeat}
@@ -39,7 +40,7 @@
   </style>
 </head>
 <body>
-  <!-- NAV (nascosta in login) -->
+  <!-- NAV (nascosta durante il login) -->
   <nav class="navbar navbar-expand-lg navbar-dark">
     <div class="container">
       <a class="navbar-brand fw-semibold" href="#/stock"><i class="bi bi-box-seam me-2"></i>StockApp</a>
@@ -59,7 +60,7 @@
   </nav>
 
   <main class="container py-4">
-    <!-- LOGIN -->
+    <!-- LOGIN (full-bleed) -->
     <section id="page-auth" class="bg-transparent">
       <div class="login-split">
         <div class="login-left">
@@ -68,7 +69,7 @@
             <img src="assets/logo.png" alt="Logo aziendale" class="brand-logo"/>
           </div>
           <div class="login-box">
-            <div class="card border-0 shadow-sm" style="background:#ffffff;color:#0b1220">
+            <div class="card border-0 shadow-sm">
               <div class="card-body p-4 p-md-5">
                 <h1 class="h4 mb-3">Accedi</h1>
                 <div class="row g-3">
@@ -269,7 +270,7 @@
     // chiave univoca PER OWNER
     function makeKey(finis, complete){
       const f=(finis||'').trim().toLowerCase();
-      const c=(complete||'').trim().toLowerCase();
+      const c=(complete||'').').trim().toLowerCase();
       return `${currentUser.uid}__${f}__${c}`;
     }
 
@@ -585,4 +586,3 @@
   </script>
 </body>
 </html>
-
