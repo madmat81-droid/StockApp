@@ -8,19 +8,16 @@
 <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet"/>
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.3/dist/chart.umd.min.js"></script>
 <style>
-:root{
-  --bg:#0a0c10; --panel:#131622; --muted:#9aa3af;
-  --border:#1f2330; --primary:#3b82f6; --accent:#10b981;
-}
-body{background:var(--bg); color:#e8eaee}
+:root{--bg:#0a0c10;--panel:#131622;--muted:#9aa3af;--border:#1f2330;--primary:#3b82f6;--accent:#10b981;}
+body{background:var(--bg);color:#e8eaee}
 .navbar{background:#0f121b}
-.card{background:var(--panel); border:1px solid var(--border); border-radius:16px}
-.metric{font-size:2.4rem; font-weight:700}
+.card{background:var(--panel);border:1px solid var(--border);border-radius:16px}
+.metric{font-size:2.2rem;font-weight:700}
 .form-control,.form-select{background:#0e1220;color:#e8eaee;border-color:#1e2432}
 .form-control:focus{box-shadow:none;border-color:var(--primary)}
-.btn-primary{background:var(--primary); border-color:var(--primary)}
-.btn-success{background:var(--accent); border-color:var(--accent)}
-.table-dark{--bs-table-bg:#111425; --bs-table-striped-bg:#0e1120}
+.btn-primary{background:var(--primary);border-color:var(--primary)}
+.btn-success{background:var(--accent);border-color:var(--accent)}
+.table-dark{--bs-table-bg:#111425;--bs-table-striped-bg:#0e1120}
 .badge-role{background:#1c2231}
 .muted{color:var(--muted)}
 a.nav-link{color:#bfc6d4}
@@ -31,14 +28,21 @@ a.nav-link.active{color:#fff}
 <nav class="navbar navbar-expand-lg navbar-dark">
   <div class="container">
     <a class="navbar-brand fw-semibold" href="#/stock"><i class="bi bi-box-seam me-2"></i>StockApp</a>
-    <ul class="navbar-nav me-auto ms-3 gap-2" id="mainNav">
-      <li class="nav-item"><a class="nav-link" href="#/stock"><i class="bi bi-grid-3x3-gap me-1"></i>Stock</a></li>
-      <li class="nav-item"><a class="nav-link" href="#/stats"><i class="bi bi-graph-up me-1"></i>Statistiche</a></li>
-      <li class="nav-item d-none" id="navUsers"><a class="nav-link" href="#/users"><i class="bi bi-people me-1"></i>Utenti</a></li>
-    </ul>
-    <div class="ms-auto d-flex gap-2 align-items-center">
-      <span id="userInfo" class="badge rounded-pill badge-role d-none"></span>
-      <button id="btnLogout" class="btn btn-sm btn-outline-light d-none" type="button">Logout</button>
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navCollapse">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div id="navCollapse" class="collapse navbar-collapse">
+      <ul class="navbar-nav me-auto ms-3 gap-2" id="mainNav">
+        <li class="nav-item"><a class="nav-link" href="#/stock"><i class="bi bi-grid-3x3-gap me-1"></i>Stock</a></li>
+        <li class="nav-item"><a class="nav-link" href="#/stats"><i class="bi bi-graph-up me-1"></i>Statistiche</a></li>
+        <li class="nav-item d-none" id="navUsers"><a class="nav-link" href="#/users"><i class="bi bi-people me-1"></i>Utenti</a></li>
+      </ul>
+      <div class="ms-auto d-flex gap-2 align-items-center">
+        <span id="userInfo" class="badge rounded-pill badge-role d-none"></span>
+        <button id="btnLogout" class="btn btn-sm btn-outline-light d-none" type="button">
+          <i class="bi bi-box-arrow-right me-1"></i>Logout
+        </button>
+      </div>
     </div>
   </div>
 </nav>
@@ -46,7 +50,7 @@ a.nav-link.active{color:#fff}
 <main class="container py-4">
 
   <!-- AUTH -->
-  <section id="page-auth" class="card mb-4 d-none">
+  <section id="page-auth" class="card mb-4">
     <div class="card-body">
       <h3 class="h5 mb-3">Accesso</h3>
       <div class="row g-2 align-items-end">
@@ -59,7 +63,9 @@ a.nav-link.active{color:#fff}
           <input id="password" type="password" class="form-control" placeholder="••••••" autocomplete="current-password"/>
         </div>
         <div class="col-md-4">
-          <button id="btnLogin" class="btn btn-primary w-100" type="button"><i class="bi bi-box-arrow-in-right me-1"></i>Entra</button>
+          <button id="btnLogin" class="btn btn-primary w-100" type="button">
+            <i class="bi bi-box-arrow-in-right me-1"></i>Entra
+          </button>
           <small class="muted d-block mt-2">
             Admin → <code>admin@example.com / admin</code> · User → <code>user1@example.com / user</code>
           </small>
@@ -68,33 +74,36 @@ a.nav-link.active{color:#fff}
     </div>
   </section>
 
-  <!-- DASHBOARD (top) -->
+  <!-- DASHBOARD (metrica sintetica) -->
   <section id="page-dash" class="row g-3 d-none">
     <div class="col-md-6">
-      <div class="card h-100"><div class="card-body">
-        <div class="d-flex align-items-center">
-          <div class="me-auto"><h5 class="card-title mb-1">Articoli</h5><div class="muted small">Record visibili</div></div>
-          <div id="metricItems" class="metric">0</div>
+      <div class="card h-100"><div class="card-body d-flex align-items-center">
+        <div class="me-auto">
+          <h5 class="card-title mb-1">Articoli</h5><div class="muted small">Record visibili</div>
         </div>
+        <div id="metricItems" class="metric">0</div>
       </div></div>
     </div>
     <div class="col-md-6">
-      <div class="card h-100"><div class="card-body">
-        <div class="d-flex align-items-center">
-          <div class="me-auto"><h5 class="card-title mb-1">Giacenza totale</h5><div class="muted small">Somma Qty visibili</div></div>
-          <div id="metricQty" class="metric">0</div>
+      <div class="card h-100"><div class="card-body d-flex align-items-center">
+        <div class="me-auto">
+          <h5 class="card-title mb-1">Giacenza totale</h5><div class="muted small">Somma Qty visibili</div>
         </div>
+        <div id="metricQty" class="metric">0</div>
       </div></div>
     </div>
   </section>
 
-  <!-- PAGE: STOCK -->
+  <!-- STOCK -->
   <section id="page-stock" class="card mt-3 d-none">
     <div class="card-body">
       <div class="d-flex align-items-center mb-3 gap-2">
         <h3 class="h5 me-auto mb-0">Magazzino</h3>
         <input id="search" class="form-control" placeholder="Cerca Finis/Complete/Descrizione/Note" style="max-width:380px"/>
         <select id="filterOwner" class="form-select d-none" style="max-width:220px"></select>
+        <a id="quickUsers" href="#/users" class="btn btn-outline-light d-none">
+          <i class="bi bi-people me-1"></i> Gestisci utenti
+        </a>
       </div>
 
       <div id="addBar" class="mb-3">
@@ -127,13 +136,14 @@ a.nav-link.active{color:#fff}
 
       <div class="d-flex gap-2">
         <button id="btnExport" class="btn btn-outline-light" type="button"><i class="bi bi-download me-1"></i>Esporta JSON</button>
-        <label class="btn btn-outline-light mb-0"><i class="bi bi-upload me-1"></i>Importa JSON <input id="fileImport" type="file" accept="application/json" hidden></label>
+        <label class="btn btn-outline-light mb-0">
+          <i class="bi bi-upload me-1"></i>Importa JSON <input id="fileImport" type="file" accept="application/json" hidden>
+        </label>
       </div>
-      <div class="muted small mt-2">Dati salvati nel browser (localStorage). Visibilità per owner.</div>
     </div>
   </section>
 
-  <!-- PAGE: USERS (ADMIN) -->
+  <!-- USERS (ADMIN) -->
   <section id="page-users" class="card mt-3 d-none">
     <div class="card-body">
       <div class="d-flex align-items-center mb-3 gap-2">
@@ -158,43 +168,38 @@ a.nav-link.active{color:#fff}
     </div>
   </section>
 
-  <!-- PAGE: STATS -->
+  <!-- STATS -->
   <section id="page-stats" class="card mt-3 d-none">
     <div class="card-body">
       <div class="d-flex align-items-center mb-3 gap-2">
         <h3 class="h5 me-auto mb-0">Statistiche</h3>
-        <input id="sSearch" class="form-control" placeholder="Filtro testo (Finis/Complete/Desc/Note)" style="max-width:340px"/>
+        <input id="sSearch" class="form-control" placeholder="Filtro testo" style="max-width:340px"/>
         <select id="sOwner" class="form-select" style="max-width:220px"></select>
         <button id="sApply" class="btn btn-primary" type="button"><i class="bi bi-funnel me-1"></i>Applica</button>
       </div>
       <div class="row g-4">
-        <div class="col-12">
-          <div class="card"><div class="card-body">
-            <h6 class="mb-2">Top codici per Qty (Bar)</h6>
-            <canvas id="chartTopCodes" height="120"></canvas>
-          </div></div>
-        </div>
-        <div class="col-12">
-          <div class="card"><div class="card-body">
-            <h6 class="mb-2">Distribuzione Qty per Owner (Pie)</h6>
-            <canvas id="chartByOwner" height="120"></canvas>
-          </div></div>
-        </div>
+        <div class="col-12"><div class="card"><div class="card-body">
+          <h6 class="mb-2">Top codici per Qty</h6>
+          <canvas id="chartTopCodes" height="120"></canvas>
+        </div></div></div>
+        <div class="col-12"><div class="card"><div class="card-body">
+          <h6 class="mb-2">Distribuzione Qty per Owner</h6>
+          <canvas id="chartByOwner" height="120"></canvas>
+        </div></div></div>
       </div>
-      <div class="muted small mt-2">I grafici rispettano visibilità/ruoli: gli User vedono i propri dati; gli Admin possono filtrare per Owner o “Tutti”.</div>
     </div>
   </section>
 
 </main>
 
 <script type="module">
-/* ===== STATE & STORAGE ===== */
+/* ---------- STATE & STORAGE ---------- */
 const LS_ITEMS='stockapp.items.v4';
 const LS_USERS='stockapp.users.v1';
 let state={user:null,items:[],users:[]};
 const uid=()=>Math.random().toString(36).slice(2,10);
 const byEmail=e=>(e||'').trim().toLowerCase();
-function esc(s){return (s??'').toString().replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));}
+const esc=s=>(s??'').toString().replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]}));
 
 function loadItems(){try{state.items=JSON.parse(localStorage.getItem(LS_ITEMS)||'[]');}catch{state.items=[];}}
 function saveItems(){localStorage.setItem(LS_ITEMS,JSON.stringify(state.items));}
@@ -208,78 +213,97 @@ function ensureSeedUsers(){
   }
 }
 
-/* ===== AUTH ===== */
+/* ---------- AUTH ---------- */
 function login(email,pw){
   ensureSeedUsers();
   const u=state.users.find(x=>byEmail(x.email)===byEmail(email));
-  if(!u || u.pass!==pw){alert('Credenziali non valide');return;}
+  if(!u||u.pass!==pw){alert('Credenziali non valide');return;}
   state.user={email:u.email,role:u.role};
   loadItems();
-  routeTo(location.hash||'#/stock');
   renderNav();
+  location.hash = location.hash || '#/stock';
+  routeTo(location.hash);
 }
-function logout(){state.user=null; routeTo('#/stock'); renderNav();}
-
-/* ===== ROUTER ===== */
-function show(id){document.querySelectorAll('main > section, #page-dash').forEach(s=>s.classList.add('d-none')); document.querySelectorAll('.nav-link').forEach(a=>a.classList.remove('active')); if(id==='#/stock'){document.getElementById('page-dash').classList.remove('d-none'); document.getElementById('page-stock').classList.remove('d-none'); document.querySelector('a[href=\"#/stock\"]').classList.add('active');} if(id==='#/users'){document.getElementById('page-users').classList.remove('d-none'); document.querySelector('a[href=\"#/users\"]').classList.add('active');} if(id==='#/stats'){document.getElementById('page-stats').classList.remove('d-none'); document.querySelector('a[href=\"#/stats\"]').classList.add('active');}}
-function routeTo(hash){
-  if(!state.user){document.getElementById('page-auth').classList.remove('d-none'); document.getElementById('page-dash').classList.add('d-none'); document.getElementById('page-stock').classList.add('d-none'); document.getElementById('page-users').classList.add('d-none'); document.getElementById('page-stats').classList.add('d-none'); return;}
-  if(hash==='#/users' && state.user.role!=='admin'){location.hash='#/stock'; return;}
-  document.getElementById('page-auth').classList.add('d-none');
-  show(hash||'#/stock');
-  renderAll();
+function logout(){
+  state.user=null;
+  renderNav();
+  routeTo('#/stock');
+  document.getElementById('page-auth').classList.remove('d-none');
 }
-window.addEventListener('hashchange',()=>routeTo(location.hash));
 
+/* ---------- NAV BAR / ROUTING ---------- */
 function renderNav(){
   const info=document.getElementById('userInfo');
   const out=document.getElementById('btnLogout');
   const navUsers=document.getElementById('navUsers');
-  if(!state.user){info.classList.add('d-none'); out.classList.add('d-none'); navUsers.classList.add('d-none'); return;}
-  info.classList.remove('d-none'); out.classList.remove('d-none');
-  info.textContent=`${state.user.email} • ${state.user.role}`;
-  navUsers.classList.toggle('d-none', state.user.role!=='admin');
-}
+  const quickUsers=document.getElementById('quickUsers');
 
-/* ===== DATA VIEW HELPERS ===== */
-function visibleItems(filterText='', ownerSel='__auto__'){
-  let arr=state.items;
-  // owner visibility
-  if(state.user.role!=='admin'){
-    arr=arr.filter(r=>byEmail(r.owner)===byEmail(state.user.email));
-  }else if(ownerSel && ownerSel!=='__auto__' && ownerSel!=='__all__'){
-    arr=arr.filter(r=>byEmail(r.owner)===byEmail(ownerSel));
+  if(!state.user){
+    info.classList.add('d-none'); out.classList.add('d-none');
+    navUsers.classList.add('d-none'); quickUsers.classList.add('d-none');
+    return;
   }
-  const q=(filterText||'').toLowerCase();
+  info.textContent=`${state.user.email} • ${state.user.role}`;
+  info.classList.remove('d-none'); out.classList.remove('d-none');
+  const isAdmin = state.user.role==='admin';
+  navUsers.classList.toggle('d-none', !isAdmin);
+  quickUsers.classList.toggle('d-none', !isAdmin);
+}
+function setActive(hash){
+  document.querySelectorAll('.nav-link').forEach(a=>a.classList.remove('active'));
+  const link=document.querySelector(`.nav-link[href="${hash}"]`);
+  if(link) link.classList.add('active');
+}
+function showOnly(...ids){
+  ['page-auth','page-dash','page-stock','page-users','page-stats'].forEach(id=>{
+    document.getElementById(id).classList.add('d-none');
+  });
+  ids.forEach(id=>document.getElementById(id).classList.remove('d-none'));
+}
+function routeTo(hash){
+  if(!state.user){ showOnly('page-auth'); setActive(''); return; }
+  if(hash==='#/users' && state.user.role!=='admin'){ hash='#/stock'; }
+  if(hash==='#/stock'){ showOnly('page-dash','page-stock'); renderStock(); setActive('#/stock'); }
+  if(hash==='#/stats'){ showOnly('page-stats'); renderStats(); setActive('#/stats'); }
+  if(hash==='#/users'){ showOnly('page-users'); renderUsers(); setActive('#/users'); }
+}
+window.addEventListener('hashchange',()=>routeTo(location.hash));
+
+/* ---------- DATA HELPERS ---------- */
+function visibleItems(text='', ownerSel='__auto__'){
+  let arr=state.items;
+  if(state.user.role!=='admin'){
+    arr = arr.filter(r=>byEmail(r.owner)===byEmail(state.user.email));
+  } else if(ownerSel && ownerSel!=='__auto__' && ownerSel!=='__all__'){
+    arr = arr.filter(r=>byEmail(r.owner)===byEmail(ownerSel));
+  }
+  const q=(text||'').toLowerCase();
   if(q){
-    arr=arr.filter(r=>
-      (r.finis||'').toLowerCase().includes(q) ||
-      (r.complete||'').toLowerCase().includes(q) ||
-      (r.desc||'').toLowerCase().includes(q) ||
-      (r.note||'').toLowerCase().includes(q)
-    );
+    arr=arr.filter(r=>(r.finis||'').toLowerCase().includes(q)||
+                       (r.complete||'').toLowerCase().includes(q)||
+                       (r.desc||'').toLowerCase().includes(q)||
+                       (r.note||'').toLowerCase().includes(q));
   }
   return arr;
 }
-function metrics(arr){return {totalItems:arr.length,totalQty:arr.reduce((a,b)=>a+Math.max(0,Number(b.qty||0)),0)}}
-
-function ensureOwnerOptions(selectEl){
-  // fill owner filters (admin only)
-  if(state.user.role!=='admin'){selectEl.classList.add('d-none'); return;}
+function metrics(arr){return{totalItems:arr.length,totalQty:arr.reduce((a,b)=>a+Math.max(0,Number(b.qty||0)),0)}}
+function ensureOwnerOptions(sel){
+  if(state.user?.role!=='admin'){ sel.classList.add('d-none'); return; }
   const owners=[...new Set(state.items.map(x=>byEmail(x.owner)).filter(Boolean))].sort();
-  selectEl.innerHTML=`<option value="__auto__">— Filtro Owner (auto) —</option><option value="__all__">Tutti</option>`+owners.map(o=>`<option value="${o}">${o}</option>`).join('');
-  selectEl.classList.remove('d-none');
+  sel.innerHTML=`<option value="__auto__">— Filtro Owner (auto) —</option><option value="__all__">Tutti</option>` + owners.map(o=>`<option value="${o}">${o}</option>`).join('');
+  sel.classList.remove('d-none');
 }
 
-/* ===== RENDER PAGES ===== */
+/* ---------- RENDER: STOCK ---------- */
 function renderStock(){
-  document.getElementById('ownerHint').textContent=state.user?.email||'-';
-  const filterOwner=document.getElementById('filterOwner');
-  ensureOwnerOptions(filterOwner);
-  const list=visibleItems(document.getElementById('search').value, filterOwner.value);
-  const {totalItems,totalQty}=metrics(list);
-  document.getElementById('metricItems').textContent=totalItems;
-  document.getElementById('metricQty').textContent=totalQty;
+  document.getElementById('ownerHint').textContent = state.user?.email || '-';
+  ensureOwnerOptions(document.getElementById('filterOwner'));
+
+  const list = visibleItems(document.getElementById('search').value, document.getElementById('filterOwner').value);
+  const {totalItems,totalQty} = metrics(list);
+  document.getElementById('page-dash').classList.remove('d-none');
+  document.getElementById('metricItems').textContent = totalItems;
+  document.getElementById('metricQty').textContent   = totalQty;
 
   const tbody=document.getElementById('tbody'); tbody.innerHTML='';
   for(const it of list){
@@ -297,14 +321,15 @@ function renderStock(){
           <button class="btn btn-sm btn-outline-light" data-action="out" data-id="${it.id}"><i class="bi bi-dash-lg me-1"></i>Scarico</button>
         </div>
       </td>
-      <td class="${state.user.role==='admin'?'':'d-none'}">${esc(it.owner)}</td>`;
+      <td id="tdOwner" class="${state.user.role==='admin'?'':'d-none'}">${esc(it.owner)}</td>`;
     tbody.appendChild(tr);
   }
-  // mostra colonna Owner per admin
   document.getElementById('thOwner').classList.toggle('d-none', state.user.role!=='admin');
 }
+
+/* ---------- RENDER: USERS (ADMIN) ---------- */
 function renderUsers(){
-  if(state.user.role!=='admin') return;
+  if(state.user?.role!=='admin') return;
   loadUsers();
   const q=document.getElementById('uSearch').value.trim().toLowerCase();
   const rows=state.users.filter(u=>!q||u.email.toLowerCase().includes(q)).sort((a,b)=>a.email.localeCompare(b.email));
@@ -326,41 +351,35 @@ function renderUsers(){
     uBody.appendChild(tr);
   }
 }
+
+/* ---------- RENDER: STATS ---------- */
 let chartTop=null, chartOwner=null;
 function renderStats(){
-  // owner options
-  ensureOwnerOptions(document.getElementById('sOwner'));
-  const list=visibleItems(document.getElementById('sSearch').value, document.getElementById('sOwner').value);
+  const sOwner=document.getElementById('sOwner');
+  ensureOwnerOptions(sOwner);
+  const list=visibleItems(document.getElementById('sSearch').value, sOwner.value);
 
-  // aggregate: top codes by qty (use Complete+Finis as label)
   const mapCodes=new Map();
   for(const it of list){
     const key=(it.complete||it.finis||'—');
-    mapCodes.set(key, (mapCodes.get(key)||0) + Number(it.qty||0));
+    mapCodes.set(key,(mapCodes.get(key)||0)+Number(it.qty||0));
   }
   const top=[...mapCodes.entries()].sort((a,b)=>b[1]-a[1]).slice(0,12);
   const labelsTop=top.map(x=>x[0]); const dataTop=top.map(x=>x[1]);
 
-  // aggregate: qty by owner
   const mapOwner=new Map();
   for(const it of list){
     const key=it.owner||'—';
-    mapOwner.set(key, (mapOwner.get(key)||0) + Number(it.qty||0));
+    mapOwner.set(key,(mapOwner.get(key)||0)+Number(it.qty||0));
   }
-  const labelsOwn=[...mapOwner.keys()]; const dataOwn=[...mapOwner.values()];
+  const labelsOwn=[...mapOwner.keys()], dataOwn=[...mapOwner.values()];
 
-  // draw charts
-  const ctxTop=document.getElementById('chartTopCodes');
-  const ctxOwn=document.getElementById('chartByOwner');
-
-  if(chartTop) chartTop.destroy();
-  if(chartOwner) chartOwner.destroy();
-
-  chartTop=new Chart(ctxTop,{type:'bar',data:{labels:labelsTop,datasets:[{label:'Qty',data:dataTop}]},options:{responsive:true,plugins:{legend:{display:false}}}});
-  chartOwner=new Chart(ctxOwn,{type:'pie',data:{labels:labelsOwn,datasets:[{label:'Qty',data:dataOwn}]},options:{responsive:true}});
+  if(chartTop) chartTop.destroy(); if(chartOwner) chartOwner.destroy();
+  chartTop = new Chart(document.getElementById('chartTopCodes'), {type:'bar',data:{labels:labelsTop,datasets:[{label:'Qty',data:dataTop}]},options:{plugins:{legend:{display:false}}}});
+  chartOwner = new Chart(document.getElementById('chartByOwner'), {type:'pie',data:{labels:labelsOwn,datasets:[{label:'Qty',data:dataOwn}]}} );
 }
 
-/* ===== ACTIONS ===== */
+/* ---------- ACTIONS ---------- */
 function addItem(){
   const finis=document.getElementById('newFinis').value.trim();
   const complete=document.getElementById('newComplete').value.trim();
@@ -370,30 +389,31 @@ function addItem(){
   state.items.push({id:uid(),owner:state.user.email,finis,complete,desc,note,qty:0,createdAt:Date.now()});
   saveItems();
   ['newFinis','newComplete','newDesc','newNote'].forEach(id=>document.getElementById(id).value='');
-  renderStock(); renderStats(); // aggiornare anche stats
+  renderStock(); renderStats();
 }
 function moveItem(id,delta){
   const i=state.items.findIndex(r=>r.id===id); if(i<0) return;
   const isOwner=byEmail(state.items[i].owner)===byEmail(state.user.email);
   if(state.user.role!=='admin' && !isOwner){alert('Puoi modificare solo i tuoi record.');return;}
-  state.items[i].qty=Math.max(0, Number(state.items[i].qty||0)+Number(delta||0));
-  saveItems();
-  renderStock(); renderStats();
+  state.items[i].qty=Math.max(0,Number(state.items[i].qty||0)+Number(delta||0));
+  saveItems(); renderStock(); renderStats();
 }
 
-/* ===== WIREUP ===== */
-ensureSeedUsers(); renderNav();
-document.getElementById('btnLogin').addEventListener('click',()=>login(document.getElementById('email').value,document.getElementById('password').value));
+/* ---------- BOOT & EVENTS ---------- */
+ensureSeedUsers();
+document.getElementById('btnLogin').addEventListener('click',()=>login(
+  document.getElementById('email').value, document.getElementById('password').value
+));
 document.getElementById('btnLogout').addEventListener('click',logout);
 
-// stock events
-document.getElementById('search').addEventListener('input',()=>renderStock());
-document.getElementById('filterOwner').addEventListener('change',()=>renderStock());
+// stock
+document.getElementById('search').addEventListener('input',renderStock);
+document.getElementById('filterOwner').addEventListener('change',renderStock);
 document.getElementById('btnAdd').addEventListener('click',addItem);
 document.getElementById('tbody').addEventListener('click',e=>{
   const b=e.target.closest('button[data-action]'); if(!b) return;
   const tr=b.closest('tr'); const id=b.dataset.id||tr?.dataset?.id;
-  const qtyInput=tr.querySelector('[data-qty]'); let v=Number(qtyInput?.value||1); if(!Number.isFinite(v)||v<1) v=1;
+  let v=Number(tr.querySelector('[data-qty]')?.value||1); if(!Number.isFinite(v)||v<1) v=1;
   if(b.dataset.action==='in') moveItem(id,+v);
   if(b.dataset.action==='out') moveItem(id,-v);
 });
@@ -402,15 +422,17 @@ document.getElementById('btnExport').addEventListener('click',()=>{
   const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download='stockapp_export.json'; a.click(); URL.revokeObjectURL(a.href);
 });
 document.getElementById('fileImport').addEventListener('change',e=>{
-  const f=e.target.files?.[0]; if(!f) return; const rd=new FileReader();
-  rd.onload=ev=>{try{const arr=JSON.parse(ev.target.result); if(!Array.isArray(arr)) throw 0;
-    state.items=arr.map(x=>({id:x.id||uid(),owner:byEmail(x.owner||''),finis:x.finis||'',complete:x.complete||'',desc:x.desc||x.description||'',note:x.note||'',qty:Math.max(0,Number(x.qty||0)),createdAt:x.createdAt||Date.now()}));
-    saveItems(); renderStock(); renderStats();
-  }catch{alert('JSON non valido');}};
-  rd.readAsText(f); e.target.value='';
+  const f=e.target.files?.[0]; if(!f) return;
+  const rd=new FileReader(); rd.onload=ev=>{
+    try{
+      const arr=JSON.parse(ev.target.result); if(!Array.isArray(arr)) throw 0;
+      state.items=arr.map(x=>({id:x.id||uid(),owner:byEmail(x.owner||''),finis:x.finis||'',complete:x.complete||'',desc:x.desc||x.description||'',note:x.note||'',qty:Math.max(0,Number(x.qty||0)),createdAt:x.createdAt||Date.now()}));
+      saveItems(); renderStock(); renderStats();
+    }catch{ alert('JSON non valido'); }
+  }; rd.readAsText(f); e.target.value='';
 });
 
-// users events (admin)
+// users
 document.getElementById('btnAddUser').addEventListener('click',()=>{
   loadUsers();
   const email=byEmail(document.getElementById('uEmail').value);
@@ -427,6 +449,7 @@ document.getElementById('uBody').addEventListener('change',e=>{
   const sel=e.target.closest('select[data-urole]'); if(!sel) return;
   loadUsers(); const em=byEmail(sel.getAttribute('data-urole')); const u=state.users.find(x=>byEmail(x.email)===em);
   if(!u) return; u.role=sel.value; saveUsers(); if(state.user && byEmail(state.user.email)===em){state.user.role=u.role; renderNav();}
+  renderUsers(); renderNav();
 });
 document.getElementById('uBody').addEventListener('click',e=>{
   const b=e.target.closest('button[data-action]'); if(!b) return;
@@ -435,14 +458,12 @@ document.getElementById('uBody').addEventListener('click',e=>{
   if(b.dataset.action==='del'){ if(!confirm(`Eliminare ${email}?`)) return; state.users=state.users.filter(x=>byEmail(x.email)!==byEmail(email)); saveUsers(); if(state.user && byEmail(state.user.email)===byEmail(email)){state.user=null; renderNav(); routeTo('#/stock');} renderUsers();}
 });
 
-// stats events
+// stats
 document.getElementById('sApply').addEventListener('click',renderStats);
 
-// initial route
-if(!state.user){document.getElementById('page-auth').classList.remove('d-none');}
-routeTo(location.hash||'#/stock');
+// primo render
 renderNav();
-renderStock(); renderUsers(); renderStats();
+document.getElementById('page-auth').classList.remove('d-none');
 </script>
 </body>
 </html>
