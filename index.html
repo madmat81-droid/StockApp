@@ -11,6 +11,16 @@
     :root{--bg:#0a0c10;--panel:#131622;--muted:#9aa3af;--border:#1f2330;--primary:#3b82f6;--accent:#10b981;--ford:#003DA5}
     body{background:var(--bg);color:#e8eaee;margin:0;padding:0;overflow-x:hidden}
     .navbar{background:#0f121b}
+    /* New AppBar */
+    header.appbar{background:var(--ford); color:#fff; box-shadow:0 6px 24px rgba(0,0,0,.25)}
+    header.appbar .brand{display:flex;align-items:center;gap:14px;font-weight:800;font-size:clamp(22px,2.4vw,34px);letter-spacing:.4px}
+    header.appbar .brand img{height:38px;width:auto;display:block}
+    header.appbar .bar-inner{display:flex;align-items:center;gap:16px;min-height:90px;padding:14px 18px}
+    header.appbar .nav-actions{display:flex;gap:10px;margin-left:auto}
+    .btn-header{--bs-btn-bg:#0a4fb8;--bs-btn-border-color:#0a4fb8;--bs-btn-hover-bg:#083f92;--bs-btn-hover-border-color:#083f92;--bs-btn-color:#fff}
+    .btn-header-outline{--bs-btn-color:#fff;--bs-btn-border-color:#cfe3ff;--bs-btn-hover-bg:#0a4fb8;--bs-btn-hover-border-color:#cfe3ff}
+    a.nav-link{color:#fff;text-decoration:none}
+    a.nav-link.active{filter:brightness(1.1)}
     .card{background:var(--panel);border:1px solid var(--border);border-radius:16px}
     .form-control,.form-select{background:#0e1220;color:#e8eaee;border-color:#1e2432}
     .form-control:focus{box-shadow:none;border-color:var(--primary)}
@@ -27,6 +37,7 @@
     body.auth-mode nav.navbar{display:none!important;visibility:hidden!important;height:0!important;padding:0!important;margin:0!important;overflow:hidden!important}
     /* Niente margini/padding della <main class="container"> durante il login */
     body.auth-mode main.container{padding:0!important;max-width:100%!important}
+    body.auth-mode header.appbar{display:none!important}
     /* Evita bordi laterali quando siamo nel login full-bleed */
     body.auth-mode #page-auth{padding:0;margin:0;}
 
@@ -43,36 +54,34 @@
     .login-right{background:radial-gradient(ellipse at 20% 10%, rgba(0,0,0,.35), rgba(0,0,0,.65)), url('assets/bg.jpg') center/cover no-repeat}
     @media (max-width:992px){.login-split{grid-template-columns:1fr}.login-right{min-height:40vh}}
 
-    /* ---- Background pagina STOCK (coerente con login) ---- */
-    body.is-stock:not(.auth-mode){
+    /* ---- Background pagine (Stock, Stats, Users) ---- */
+    body.page-bg:not(.auth-mode){
       min-height:100vh;
       background:
         radial-gradient(ellipse at 20% 10%, rgba(0,0,0,.35), rgba(0,0,0,.65)),
         url('assets/Sfondo FT.png') center center / cover no-repeat;
     }
     /* pannelli più leggibili sullo sfondo */
-    body.is-stock:not(.auth-mode) .card{ background:rgba(19,22,34,.92); }
+    body.page-bg:not(.auth-mode) .card{ background:rgba(19,22,34,.92); }
   </style>
 </head>
 <body class="auth-mode">
   <!-- NAV (nascosta durante il login) -->
-  <nav class="navbar navbar-expand-lg navbar-dark">
-    <div class="container">
-      <a class="navbar-brand fw-semibold" href="#/stock"><i class="bi bi-box-seam me-2"></i>StockApp</a>
-      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navCollapse"><span class="navbar-toggler-icon"></span></button>
-      <div id="navCollapse" class="collapse navbar-collapse">
-        <ul class="navbar-nav me-auto ms-3 gap-2">
-          <li class="nav-item"><a class="nav-link" href="#/stock"><i class="bi bi-grid-3x3-gap me-1"></i>Stock</a></li>
-          <li class="nav-item"><a class="nav-link" href="#/stats"><i class="bi bi-graph-up me-1"></i>Statistiche</a></li>
-          <li class="nav-item d-none" id="navUsers"><a class="nav-link" href="#/users"><i class="bi bi-people me-1"></i>Utenti</a></li>
-        </ul>
-        <div class="ms-auto d-flex gap-2 align-items-center">
-          <span id="userInfo" class="badge rounded-pill badge-role d-none"></span>
-          <button id="btnLogout" class="btn btn-sm btn-outline-light d-none" type="button"><i class="bi bi-box-arrow-right me-1"></i>Logout</button>
-        </div>
+  <header class="appbar d-none">
+    <div class="container bar-inner">
+      <div class="brand">
+        <img src="assets/logo.png" alt="logo"/>
+        <span>StockApp</span>
+      </div>
+      <div class="nav-actions">
+        <a class="btn btn-header nav-link" href="#/stock"><i class="bi bi-grid-3x3-gap me-1"></i>Stock</a>
+        <a class="btn btn-header-outline nav-link" href="#/stats"><i class="bi bi-graph-up me-1"></i>Statistiche</a>
+        <a id="navUsers" class="btn btn-header-outline nav-link d-none" href="#/users"><i class="bi bi-people me-1"></i>Utenti</a>
+        <span id="userInfo" class="badge rounded-pill badge-role d-none"></span>
+        <button id="btnLogout" class="btn btn-light d-none" type="button"><i class="bi bi-box-arrow-right me-1"></i>Logout</button>
       </div>
     </div>
-  </nav>
+  </header>
 
   <main class="container py-4">
     <!-- LOGIN (full-bleed) -->
@@ -129,83 +138,17 @@
     <section id="page-stock" class="card mt-3 d-none">
       <div class="card-body">
         <div class="d-flex align-items-center mb-3 gap-2">
-          <h3 class="h5 me-auto mb-0">Magazzino</h3>
-          <input id="search" class="form-control" placeholder="Cerca Finis/Complete/Descrizione/Note" style="max-width:380px" />
-          <select id="filterOwner" class="form-select d-none" style="max-width:220px"></select>
-          <a id="quickUsers" href="#/users" class="btn btn-outline-light d-none"><i class="bi bi-people me-1"></i>Gestisci utenti</a>
-        </div>
-
-        <div class="mb-3">
-          <div class="row g-2">
-            <div class="col-lg-2"><input id="newFinis" class="form-control" placeholder="Finis Code" /></div>
-            <div class="col-lg-2"><input id="newComplete" class="form-control" placeholder="Complete Code" /></div>
-            <div class="col-lg-3"><input id="newDesc" class="form-control" placeholder="Descrizione" /></div>
-            <div class="col-lg-3"><input id="newNote" class="form-control" placeholder="Note" /></div>
-            <div class="col-lg-2 d-grid"><button id="btnAdd" class="btn btn-success" type="button"><i class="bi bi-plus-lg me-1"></i>Aggiungi</button></div>
-          </div>
-          <div class="muted small mt-1">I nuovi record saranno di: <span id="ownerHint">—</span></div>
-        </div>
-
-        <div class="table-responsive">
-          <table class="table table-dark table-striped align-middle">
-            <thead>
-              <tr>
-                <th>Finis</th>
-                <th>Complete</th>
-                <th>Descrizione</th>
-                <th>Note</th>
-                <th class="text-end">Qty</th>
-                <th class="text-end">Azioni</th>
-                <th id="thOwner" class="d-none">Dealer</th>
-              </tr>
-            </thead>
-            <tbody id="tbody"></tbody>
-          </table>
-        </div>
-      </div>
-    </section>
-
-    <!-- USERS (ADMIN) -->
-    <section id="page-users" class="card mt-3 d-none">
-      <div class="card-body">
-        <div class="d-flex align-items-center mb-3 gap-2">
-          <h3 class="h5 me-auto mb-0">Gestione Utenti</h3>
-          <input id="uSearch" class="form-control" placeholder="Cerca email" style="max-width:320px" />
-        </div>
-
-        <div class="row g-2 mb-3">
-          <div class="col-lg-4"><input id="uNewEmail" class="form-control" placeholder="email@dominio.it" /></div>
-          <div class="col-lg-3"><input id="uNewPassword" class="form-control" placeholder="password temporanea" /></div>
-          <div class="col-lg-3"><input id="uNewDealer" class="form-control" placeholder="Dealer (facoltativo)" /></div>
-          <div class="col-lg-2">
-            <div class="input-group">
-              <select id="uNewRole" class="form-select"><option value="user">User</option><option value="admin">Admin</option></select>
-              <button id="btnCreateUser" class="btn btn-success" type="button" title="Crea utente"><i class="bi bi-person-plus"></i></button>
-            </div>
-          </div>
-          <div id="uMsg" class="text-success small"></div>
-        </div>
-
-        <div class="table-responsive">
-          <table class="table table-dark table-striped align-middle">
-            <thead><tr><th>Email</th><th>Dealer</th><th>Ruolo</th><th>Stato</th><th class="text-end">Azioni</th></tr></thead>
-            <tbody id="uBody"></tbody>
-          </table>
-        </div>
-        <div class="muted small">Per cancellare definitivamente un'utenza da <strong>Authentication</strong> usa la Cloud Function (se disponibile). Qui puoi bloccare/sbloccare via Firestore e, se la Function esiste, anche eliminare.</div>
-      </div>
-    </section>
-
-    <!-- STATS -->
-    <section id="page-stats" class="card mt-3 d-none">
-      <div class="card-body">
-        <div class="d-flex align-items-center mb-3 gap-2">
           <h3 class="h5 me-auto mb-0">Statistiche</h3>
-          <input id="sSearch" class="form-control" placeholder="Filtro testo" style="max-width:340px" />
-          <select id="sOwner" class="form-select" style="max-width:220px"></select>
+          <input id="sSearch" class="form-control" placeholder="Filtro testo" style="max-width:300px" />
+          <select id="sOwner" class="form-select" style="max-width:200px"></select>
+          <select id="sFinis" class="form-select" style="max-width:200px"><option value="__all__">Tutti i Finis</option></select>
           <button id="sApply" class="btn btn-primary" type="button"><i class="bi bi-funnel me-1"></i>Applica</button>
         </div>
         <div class="row g-4">
+          <div class="col-12"><div class="card"><div class="card-body">
+            <h6 class="mb-2">Andamento quantità nel tempo</h6>
+            <canvas id="chartQtyTime" height="120"></canvas>
+          </div></div></div>
           <div class="col-12"><div class="card"><div class="card-body">
             <h6 class="mb-2">Top codici per Qty</h6>
             <canvas id="chartTopCodes" height="120"></canvas>
@@ -247,7 +190,7 @@
     /* Stato */
     let currentUser = null; // { uid, email, role, dealer, disabled }
     let itemsCache  = [];
-    let chartTop=null, chartOwner=null;
+    let chartTop=null, chartOwner=null, chartTime=null;
     let profilesMap = new Map(); // uid -> profile
 
     const $  = s => document.querySelector(s);
@@ -261,9 +204,19 @@
       if(ids.includes('page-auth')) document.body.classList.add('auth-mode'); else document.body.classList.remove('auth-mode');
     }
     function setActive(hash){ $$('.nav-link').forEach(a=>a.classList.remove('active')); const l=document.querySelector(`.nav-link[href="${hash}"]`); if(l) l.classList.add('active'); }
-    function renderNav(){
+    function function renderNav(){
       const info=$('#userInfo'), out=$('#btnLogout'), navUsers=$('#navUsers'), quick=$('#quickUsers');
-      if(!currentUser){ info.classList.add('d-none'); out.classList.add('d-none'); navUsers.classList.add('d-none'); quick.classList.add('d-none'); return; }
+      const appbar=document.querySelector('header.appbar');
+      if(!currentUser){ showOnly('page-auth'); setActive(''); document.body.classList.remove('page-bg'); return; }
+      if(appbar) appbar.classList.remove('d-none');
+      const dealerTxt = currentUser.dealer ? ` • ${currentUser.dealer}` : '';
+      const badge = currentUser.disabled ? ' (bloccato)' : '';
+      info.textContent = `${currentUser.email} • ${currentUser.role}${dealerTxt}${badge}`;
+      info.classList.remove('d-none'); out.classList.remove('d-none');
+      const isAdmin=currentUser.role==='admin';
+      navUsers.classList.toggle('d-none', !isAdmin);
+      if(quick) quick.classList.toggle('d-none', !isAdmin);
+    }
       const dealerTxt = currentUser.dealer ? ` • ${currentUser.dealer}` : '';
       const badge = currentUser.disabled ? ' (bloccato)' : '';
       info.textContent = `${currentUser.email} • ${currentUser.role}${dealerTxt}${badge}`;
@@ -278,21 +231,24 @@
       if(hash==='#/users' && currentUser.role!=='admin'){ hash='#/stock'; }
       if(hash==='#/stock'){
         showOnly('page-dash','page-stock');
-        document.body.classList.add('is-stock');
+      document.body.classList.add('page-bg');
         renderStock(); setActive('#/stock');
         return;
       }
+      }
       if(hash==='#/stats'){
         showOnly('page-stats');
-        document.body.classList.remove('is-stock');
+        document.body.classList.add('page-bg');
         renderStats(); setActive('#/stats');
         return;
       }
+      }
       if(hash==='#/users'){
         showOnly('page-users');
-        document.body.classList.remove('is-stock');
+        document.body.classList.add('page-bg');
         renderUsers(); setActive('#/users');
         return;
+      }
       }
       // default
       showOnly('page-dash','page-stock');
@@ -510,10 +466,38 @@
     function renderStats(){
       if(!currentUser) return;
       const sOwner=$('#sOwner'); ownerOptions(sOwner);
+      // build Finis list
+      const finisSet=new Set(itemsCache.map(x=>x.finis).filter(Boolean));
+      const prevF=$('#sFinis').value || '__all__';
+      $('#sFinis').innerHTML = '<option value="__all__">Tutti i Finis</option>' + [...finisSet].sort().map(f=>`<option value="${esc(f)}">${esc(f)}</option>`).join('');
+      if([...$('#sFinis').options].some(o=>o.value===prevF)) $('#sFinis').value=prevF; else $('#sFinis').value='__all__';
+
       const list=visibleItems($('#sSearch').value, sOwner.value);
 
+      // --- Top codes + by owner (come prima) ---
       const mapCodes=new Map();
       for(const it of list){ const key=(it.complete||it.finis||'—'); mapCodes.set(key,(mapCodes.get(key)||0)+Number(it.qty||0)); }
+      const top=[...mapCodes.entries()].sort((a,b)=>b[1]-a[1]).slice(0,12);
+      const labelsTop=top.map(x=>x[0]); const dataTop=top.map(x=>x[1]);
+
+      const mapOwner=new Map();
+      for(const it of list){ const k=it.ownerEmail||'—'; mapOwner.set(k,(mapOwner.get(k)||0)+Number(it.qty||0)); }
+      const labelsOwn=[...mapOwner.keys()], dataOwn=[...mapOwner.values()];
+
+      if(chartTop) chartTop.destroy(); if(chartOwner) chartOwner.destroy(); if(chartTime) chartTime.destroy();
+      chartTop=new Chart($('#chartTopCodes'),{type:'bar',data:{labels:labelsTop,datasets:[{label:'Qty',data:dataTop}]},options:{plugins:{legend:{display:false}}}});
+      chartOwner=new Chart($('#chartByOwner'),{type:'pie',data:{labels:labelsOwn,datasets:[{label:'Qty',data:dataOwn}]}});
+
+      // --- Time series by createdAt, monthly ---
+      const chosenFinis=$('#sFinis').value;
+      const filtered = list.filter(it=> chosenFinis==='__all__' ? true : (it.finis||'')===chosenFinis);
+      // take last 12 months window
+      const now=new Date(); const months=[]; for(let i=11;i>=0;i--){ const d=new Date(now.getFullYear(), now.getMonth()-i, 1); const key=`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}`; months.push({d,key,label:`${String(d.getMonth()+1).padStart(2,'0')}/${d.getFullYear()}`}); }
+      const sums=new Map(months.map(m=>[m.key,0]));
+      for(const it of filtered){ const ts=it.createdAt?.toDate ? it.createdAt.toDate() : (it.createdAt instanceof Date ? it.createdAt : null); if(!ts) continue; const key=`${ts.getFullYear()}-${String(ts.getMonth()+1).padStart(2,'0')}`; if(sums.has(key)) sums.set(key, sums.get(key)+Number(it.qty||0)); }
+      const labels=months.map(m=>m.label); const data=months.map(m=>sums.get(m.key)||0);
+      chartTime=new Chart($('#chartQtyTime'),{type:'line',data:{labels,datasets:[{label:'Qty per mese',data, fill:false, tension:.2}]}, options:{plugins:{legend:{display:true}}, scales:{y:{beginAtZero:true}}});
+    }
       const top=[...mapCodes.entries()].sort((a,b)=>b[1]-a[1]).slice(0,12);
       const labelsTop=top.map(x=>x[0]); const dataTop=top.map(x=>x[1]);
 
@@ -611,6 +595,7 @@
 
     // stats
     $('#sApply').addEventListener('click', renderStats);
+    $('#sFinis').addEventListener('change', renderStats);
 
     async function fetchProfilesIntoMap(){ const ps = await getDocs(collection(db,'profiles')); profilesMap = new Map(ps.docs.map(d=>[d.id, d.data()])); }
     async function refreshAll(){ await fetchItems(); if(currentUser?.role==='admin') await fetchProfilesIntoMap(); renderStats(); }
