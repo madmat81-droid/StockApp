@@ -39,7 +39,7 @@
     @media (max-width:992px){.login-split{grid-template-columns:1fr}.login-right{min-height:40vh}}
   </style>
 </head>
-<body>
+<body class="auth-mode">
   <!-- NAV (nascosta durante il login) -->
   <nav class="navbar navbar-expand-lg navbar-dark">
     <div class="container">
@@ -270,7 +270,7 @@
     // chiave univoca PER OWNER
     function makeKey(finis, complete){
       const f=(finis||'').trim().toLowerCase();
-      const c=(complete||'').').trim().toLowerCase();
+      const c=(complete||'')).trim().toLowerCase();
       return `${currentUser.uid}__${f}__${c}`;
     }
 
