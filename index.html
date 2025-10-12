@@ -220,7 +220,7 @@
       info.classList.remove('d-none'); out.classList.remove('d-none');
       const isAdmin=currentUser.role==='admin';
       navUsers.classList.toggle('d-none', !isAdmin);
-      quick.classList.toggle('d-none', !isAdmin);
+      if(quick) quick.classList.toggle('d-none', !isAdmin);
     }
 
     function routeTo(hash){
@@ -486,17 +486,29 @@
 
     /* Event wiring */
     // login
-    $('#btnLogin').addEventListener('click',()=>doLogin($('#email').value.trim(), $('#password').value));
-    const onEnter=(e)=>{ if(e.key==='Enter') $('#btnLogin').click(); };
+    const _btnLogin = document.getElementById('btnLogin');
+    if(_btnLogin){ _btnLogin.addEventListener('click',()=>doLogin($('#email').value.trim(), $('#password').value)); }
+    const onEnter=(e)=>{ if(e.key==='Enter') _btnLogin && _btnLogin.click(); };
+    const _email=document.getElementById('email'); if(_email) _email.addEventListener('keydown',onEnter);
+    const _pwd=document.getElementById('password'); if(_pwd) _pwd.addEventListener('keydown',onEnter); };
     $('#email').addEventListener('keydown',onEnter); $('#password').addEventListener('keydown',onEnter);
     $('#btnLogout').addEventListener('click',doLogout);
 
-    // stock
-    $('#search').addEventListener('input',renderStock);
-    $('#filterOwner').addEventListener('change',renderStock);
-    $('#btnAdd').addEventListener('click',addItem);
-    $('#tbody').addEventListener('click',e=>{
-      const b=e.target.closest('button[data-action]'); if(!b) return;
+    // stock (bind solo se gli elementi esistono)
+    const _search=document.getElementById('search'); if(_search) _search.addEventListener('input',renderStock);
+    const _fOwner=document.getElementById('filterOwner'); if(_fOwner) _fOwner.addEventListener('change',renderStock);
+    const _btnAdd=document.getElementById('btnAdd'); if(_btnAdd) _btnAdd.addEventListener('click',addItem);
+    const _tbody=document.getElementById('tbody');
+    if(_tbody){
+      _tbody.addEventListener('click',e=>{
+        const b=e.target.closest('button[data-action]'); if(!b) return;
+        const tr=b.closest('tr'); const id=b.dataset.id||tr?.dataset?.id;
+        let v=Number(tr.querySelector('[data-qty]')?.value||1); if(!Number.isFinite(v)||v<1) v=1;
+        if(b.dataset.action==='in')  moveItem(id,+v);
+        if(b.dataset.action==='out') moveItem(id,-v);
+        if(b.dataset.action==='del') deleteItem(id);
+      });
+    } if(!b) return;
       const tr=b.closest('tr'); const id=b.dataset.id||tr?.dataset?.id;
       let v=Number(tr.querySelector('[data-qty]')?.value||1); if(!Number.isFinite(v)||v<1) v=1;
       if(b.dataset.action==='in')  moveItem(id,+v);
@@ -504,10 +516,30 @@
       if(b.dataset.action==='del') deleteItem(id);
     });
 
-    // users admin
-    document.getElementById('btnCreateUser').addEventListener('click', async ()=>{
-      if(currentUser?.role!=='admin') return;
-      const email=$('#uNewEmail').value.trim();
+    // users admin (bind se presenti)
+    const _btnCreate=document.getElementById('btnCreateUser');
+    if(_btnCreate){
+      _btnCreate.addEventListener('click', async ()=>{
+        if(currentUser?.role!=='admin') return;
+        const email=$('#uNewEmail').value.trim();
+        const pass=$('#uNewPassword').value.trim();
+        const role=$('#uNewRole').value; const dealer=$('#uNewDealer').value.trim();
+        const msgEl=$('#uMsg'); msgEl.textContent='';
+        if(!email||!pass){ msgEl.textContent='Email e password sono obbligatorie.'; return; }
+        try{
+          const secondary = initializeApp(firebaseConfig, 'secondary');
+          const secondaryAuth = getAuth(secondary);
+          const cred = await createUserWithEmailAndPassword(secondaryAuth, email, pass);
+          await setDoc(doc(db,'profiles',cred.user.uid), { email, role, dealer: dealer || '', disabled: false, createdAt: serverTimestamp() });
+          msgEl.textContent=`Utente creato: ${email}`;
+          await deleteApp(getApp('secondary'));
+        }catch(err){ console.error('CREATE USER ERROR:', err.code, err.message); msgEl.textContent=`Errore creazione: ${err.code}`; }
+        finally{
+          ['uNewEmail','uNewPassword','uNewDealer'].forEach(id=>{ const el=document.getElementById(id); if(el) el.value=''; });
+          const roleSel=document.getElementById('uNewRole'); if(roleSel) roleSel.value='user'; await renderUsers();
+        }
+      });
+    }
       const pass=$('#uNewPassword').value.trim();
       const role=$('#uNewRole').value; const dealer=$('#uNewDealer').value.trim();
       const msgEl=$('#uMsg'); msgEl.textContent='';
@@ -526,8 +558,23 @@
       }
     });
 
-    document.getElementById('uBody').addEventListener('change', async (e)=>{
-      const sel=e.target.closest('select[data-urole]');
+    const _uBody=document.getElementById('uBody');
+    if(_uBody){
+      _uBody.addEventListener('change', async (e)=>{
+        const sel=e.target.closest('select[data-urole]');
+        if(sel){ await setUserRole(sel.getAttribute('data-urole'), sel.value); return; }
+        const chk=e.target.closest('input[data-udisabled]');
+        if(chk){
+          const uid=chk.getAttribute('data-udisabled');
+          try{
+            await updateDoc(doc(db,'profiles',uid), { disabled: chk.checked });
+            try{ if(fnSetDisabled) await fnSetDisabled({ uid, disabled: chk.checked }); }catch(_){/* opzionale */}
+            const row=chk.closest('tr'); row.querySelector('.form-check-label').textContent = chk.checked ? 'Bloccato' : 'Attivo';
+            const delBtn=row.querySelector('button[data-action="deleteUser"]'); if(delBtn){ delBtn.disabled=!chk.checked; delBtn.title = chk.checked ? '' : 'Blocca prima di eliminare'; }
+          }catch(err){ console.error('DISABLE USER ERROR:', err.code, err.message); alert('Permesso negato nel cambiare stato.'); chk.checked=!chk.checked; }
+        }
+      });
+    }
       if(sel){ await setUserRole(sel.getAttribute('data-urole'), sel.value); return; }
       const chk=e.target.closest('input[data-udisabled]');
       if(chk){
@@ -541,14 +588,38 @@
       }
     });
 
-    document.getElementById('uBody').addEventListener('input', async (e)=>{
-      const inp=e.target.closest('input[data-udealer]'); if(!inp) return; const uid=inp.getAttribute('data-udealer');
+    if(_uBody){
+      _uBody.addEventListener('input', async (e)=>{
+        const inp=e.target.closest('input[data-udealer]'); if(!inp) return; const uid=inp.getAttribute('data-udealer');
+        clearTimeout(inp._t);
+        inp._t=setTimeout(async()=>{ try{ await updateDoc(doc(db,'profiles',uid), { dealer: inp.value.trim() }); }catch(err){ console.error('UPDATE DEALER ERROR:', err.code, err.message); alert('Impossibile aggiornare Dealer.'); } },400);
+      });
+    } if(!inp) return; const uid=inp.getAttribute('data-udealer');
       clearTimeout(inp._t);
       inp._t=setTimeout(async()=>{ try{ await updateDoc(doc(db,'profiles',uid), { dealer: inp.value.trim() }); }catch(err){ console.error('UPDATE DEALER ERROR:', err.code, err.message); alert('Impossibile aggiornare Dealer.'); } },400);
     });
 
-    document.getElementById('uBody').addEventListener('click', async (e)=>{
-      const b=e.target.closest('button[data-action]'); if(!b) return;
+    if(_uBody){
+      _uBody.addEventListener('click', async (e)=>{
+        const b=e.target.closest('button[data-action]'); if(!b) return;
+        if (b.dataset.action==='pwreset'){
+          const email=b.getAttribute('data-email');
+          try{ await sendPasswordResetEmail(auth, email); alert(`Email inviata a: ${email}`); }
+          catch(err){ console.error('PW RESET ERROR:', err.code, err.message); alert(`Errore invio email: ${err.code}`); }
+          return;
+        }
+        if (b.dataset.action==='deleteUser'){
+          const uid=b.getAttribute('data-uid');
+          if(!confirm('Eliminare definitivamente questa utenza?')) return;
+          try{
+            try{ if(fnDeleteUser) await fnDeleteUser({ uid }); }catch(_){ }
+            await deleteDoc(doc(db,'profiles',uid));
+            await renderUsers();
+            alert('Utenza eliminata (profilo). Se hai la Cloud Function, è stata rimossa anche da Authentication.');
+          }catch(err){ console.error('DELETE AUTH USER ERROR:', err); alert(`Errore eliminazione utente: ${err.message || err}`); }
+        }
+      });
+    } if(!b) return;
       if (b.dataset.action==='pwreset'){
         const email=b.getAttribute('data-email');
         try{ await sendPasswordResetEmail(auth, email); alert(`Email inviata a: ${email}`); }
