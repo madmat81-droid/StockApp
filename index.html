@@ -204,19 +204,16 @@
       if(ids.includes('page-auth')) document.body.classList.add('auth-mode'); else document.body.classList.remove('auth-mode');
     }
     function setActive(hash){ $$('.nav-link').forEach(a=>a.classList.remove('active')); const l=document.querySelector(`.nav-link[href="${hash}"]`); if(l) l.classList.add('active'); }
-    function function renderNav(){
+    function renderNav(){
       const info=$('#userInfo'), out=$('#btnLogout'), navUsers=$('#navUsers'), quick=$('#quickUsers');
       const appbar=document.querySelector('header.appbar');
-      if(!currentUser){ showOnly('page-auth'); setActive(''); document.body.classList.remove('page-bg'); return; }
+      if(!currentUser){
+        showOnly('page-auth'); setActive(''); document.body.classList.remove('page-bg');
+        if(appbar) appbar.classList.add('d-none');
+        return;
+      }
       if(appbar) appbar.classList.remove('d-none');
-      const dealerTxt = currentUser.dealer ? ` • ${currentUser.dealer}` : '';
-      const badge = currentUser.disabled ? ' (bloccato)' : '';
-      info.textContent = `${currentUser.email} • ${currentUser.role}${dealerTxt}${badge}`;
-      info.classList.remove('d-none'); out.classList.remove('d-none');
-      const isAdmin=currentUser.role==='admin';
-      navUsers.classList.toggle('d-none', !isAdmin);
-      if(quick) quick.classList.toggle('d-none', !isAdmin);
-    }
+
       const dealerTxt = currentUser.dealer ? ` • ${currentUser.dealer}` : '';
       const badge = currentUser.disabled ? ' (bloccato)' : '';
       info.textContent = `${currentUser.email} • ${currentUser.role}${dealerTxt}${badge}`;
@@ -227,14 +224,13 @@
     }
 
     function routeTo(hash){
-      if(!currentUser){ showOnly('page-auth'); setActive(''); document.body.classList.remove('is-stock'); return; }
+      if(!currentUser){ showOnly('page-auth'); setActive(''); document.body.classList.remove('page-bg'); return; }
       if(hash==='#/users' && currentUser.role!=='admin'){ hash='#/stock'; }
       if(hash==='#/stock'){
         showOnly('page-dash','page-stock');
-      document.body.classList.add('page-bg');
+        document.body.classList.add('page-bg');
         renderStock(); setActive('#/stock');
         return;
-      }
       }
       if(hash==='#/stats'){
         showOnly('page-stats');
@@ -242,17 +238,15 @@
         renderStats(); setActive('#/stats');
         return;
       }
-      }
       if(hash==='#/users'){
         showOnly('page-users');
         document.body.classList.add('page-bg');
         renderUsers(); setActive('#/users');
         return;
       }
-      }
       // default
       showOnly('page-dash','page-stock');
-      document.body.classList.add('is-stock');
+      document.body.classList.add('page-bg');
       renderStock(); setActive('#/stock');
     }
     window.addEventListener('hashchange',()=>routeTo(location.hash));
@@ -477,27 +471,7 @@
       // --- Top codes + by owner (come prima) ---
       const mapCodes=new Map();
       for(const it of list){ const key=(it.complete||it.finis||'—'); mapCodes.set(key,(mapCodes.get(key)||0)+Number(it.qty||0)); }
-      const top=[...mapCodes.entries()].sort((a,b)=>b[1]-a[1]).slice(0,12);
-      const labelsTop=top.map(x=>x[0]); const dataTop=top.map(x=>x[1]);
 
-      const mapOwner=new Map();
-      for(const it of list){ const k=it.ownerEmail||'—'; mapOwner.set(k,(mapOwner.get(k)||0)+Number(it.qty||0)); }
-      const labelsOwn=[...mapOwner.keys()], dataOwn=[...mapOwner.values()];
-
-      if(chartTop) chartTop.destroy(); if(chartOwner) chartOwner.destroy(); if(chartTime) chartTime.destroy();
-      chartTop=new Chart($('#chartTopCodes'),{type:'bar',data:{labels:labelsTop,datasets:[{label:'Qty',data:dataTop}]},options:{plugins:{legend:{display:false}}}});
-      chartOwner=new Chart($('#chartByOwner'),{type:'pie',data:{labels:labelsOwn,datasets:[{label:'Qty',data:dataOwn}]}});
-
-      // --- Time series by createdAt, monthly ---
-      const chosenFinis=$('#sFinis').value;
-      const filtered = list.filter(it=> chosenFinis==='__all__' ? true : (it.finis||'')===chosenFinis);
-      // take last 12 months window
-      const now=new Date(); const months=[]; for(let i=11;i>=0;i--){ const d=new Date(now.getFullYear(), now.getMonth()-i, 1); const key=`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}`; months.push({d,key,label:`${String(d.getMonth()+1).padStart(2,'0')}/${d.getFullYear()}`}); }
-      const sums=new Map(months.map(m=>[m.key,0]));
-      for(const it of filtered){ const ts=it.createdAt?.toDate ? it.createdAt.toDate() : (it.createdAt instanceof Date ? it.createdAt : null); if(!ts) continue; const key=`${ts.getFullYear()}-${String(ts.getMonth()+1).padStart(2,'0')}`; if(sums.has(key)) sums.set(key, sums.get(key)+Number(it.qty||0)); }
-      const labels=months.map(m=>m.label); const data=months.map(m=>sums.get(m.key)||0);
-      chartTime=new Chart($('#chartQtyTime'),{type:'line',data:{labels,datasets:[{label:'Qty per mese',data, fill:false, tension:.2}]}, options:{plugins:{legend:{display:true}}, scales:{y:{beginAtZero:true}}});
-    }
       const top=[...mapCodes.entries()].sort((a,b)=>b[1]-a[1]).slice(0,12);
       const labelsTop=top.map(x=>x[0]); const dataTop=top.map(x=>x[1]);
 
