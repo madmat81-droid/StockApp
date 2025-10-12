@@ -10,17 +10,19 @@
   <style>
     :root{--bg:#0a0c10;--panel:#131622;--muted:#9aa3af;--border:#1f2330;--primary:#3b82f6;--accent:#10b981;--ford:#003DA5}
     body{background:var(--bg);color:#e8eaee;margin:0;padding:0;overflow-x:hidden}
-    .navbar{background:#0f121b}
-    /* New AppBar */
+
+    /* ===== AppBar ===== */
     header.appbar{background:var(--ford); color:#fff; box-shadow:0 6px 24px rgba(0,0,0,.25)}
-    header.appbar .brand{display:flex;align-items:center;gap:14px;font-weight:800;font-size:clamp(22px,2.4vw,34px);letter-spacing:.4px}
-    header.appbar .brand img{height:38px;width:auto;display:block}
     header.appbar .bar-inner{display:flex;align-items:center;gap:16px;min-height:90px;padding:14px 18px}
+    header.appbar .brand{display:flex;align-items:center;gap:14px;font-weight:900;font-size:clamp(24px,2.8vw,36px);letter-spacing:.4px}
+    header.appbar .brand img{height:42px;width:auto;display:block}
     header.appbar .nav-actions{display:flex;gap:10px;margin-left:auto}
     .btn-header{--bs-btn-bg:#0a4fb8;--bs-btn-border-color:#0a4fb8;--bs-btn-hover-bg:#083f92;--bs-btn-hover-border-color:#083f92;--bs-btn-color:#fff}
     .btn-header-outline{--bs-btn-color:#fff;--bs-btn-border-color:#cfe3ff;--bs-btn-hover-bg:#0a4fb8;--bs-btn-hover-border-color:#cfe3ff}
     a.nav-link{color:#fff;text-decoration:none}
     a.nav-link.active{filter:brightness(1.1)}
+
+    /* ===== Cards / Inputs ===== */
     .card{background:var(--panel);border:1px solid var(--border);border-radius:16px}
     .form-control,.form-select{background:#0e1220;color:#e8eaee;border-color:#1e2432}
     .form-control:focus{box-shadow:none;border-color:var(--primary)}
@@ -29,18 +31,11 @@
     .table-dark{--bs-table-bg:#111425;--bs-table-striped-bg:#0e1120}
     .badge-role{background:#1c2231}
     .muted{color:var(--muted)}
-    a.nav-link{color:#bfc6d4}
-    a.nav-link.active{color:#fff}
 
-    /* ---- Login split full-viewport ---- */
+    /* ===== Login split full-viewport ===== */
     body.auth-mode{background:#000}
-    body.auth-mode nav.navbar{display:none!important;visibility:hidden!important;height:0!important;padding:0!important;margin:0!important;overflow:hidden!important}
-    /* Niente margini/padding della <main class="container"> durante il login */
-    body.auth-mode main.container{padding:0!important;max-width:100%!important}
     body.auth-mode header.appbar{display:none!important}
-    /* Evita bordi laterali quando siamo nel login full-bleed */
-    body.auth-mode #page-auth{padding:0;margin:0;}
-
+    body.auth-mode main.container{padding:0!important;max-width:100%!important}
     #page-auth{padding:0;margin:0;min-height:100vh;width:100vw;margin-left:calc(50% - 50vw);margin-right:calc(50% - 50vw)}
     .login-split{width:100%;display:grid;grid-template-columns:1fr 1fr;min-height:100vh}
     .login-left{background:#ffffff;color:#0b1220;display:flex;flex-direction:column;justify-content:flex-start;align-items:center;padding:48px}
@@ -54,19 +49,19 @@
     .login-right{background:radial-gradient(ellipse at 20% 10%, rgba(0,0,0,.35), rgba(0,0,0,.65)), url('assets/bg.jpg') center/cover no-repeat}
     @media (max-width:992px){.login-split{grid-template-columns:1fr}.login-right{min-height:40vh}}
 
-    /* ---- Background pagine (Stock, Stats, Users) ---- */
+    /* ===== Background pagine (Stock, Stats, Users) ===== */
     body.page-bg:not(.auth-mode){
       min-height:100vh;
       background:
         radial-gradient(ellipse at 20% 10%, rgba(0,0,0,.35), rgba(0,0,0,.65)),
         url('assets/Sfondo FT.png') center center / cover no-repeat;
     }
-    /* pannelli più leggibili sullo sfondo */
     body.page-bg:not(.auth-mode) .card{ background:rgba(19,22,34,.92); }
   </style>
 </head>
 <body class="auth-mode">
-  <!-- NAV (nascosta durante il login) -->
+
+  <!-- APP BAR (nascosta in login) -->
   <header class="appbar d-none">
     <div class="container bar-inner">
       <div class="brand">
@@ -84,7 +79,7 @@
   </header>
 
   <main class="container py-4">
-    <!-- LOGIN (full-bleed) -->
+    <!-- LOGIN -->
     <section id="page-auth" class="bg-transparent">
       <div class="login-split">
         <div class="login-left">
@@ -118,7 +113,7 @@
       </div>
     </section>
 
-    <!-- DASHBOARD (metriche rapide) -->
+    <!-- DASHBOARD -->
     <section id="page-dash" class="row g-3 d-none">
       <div class="col-md-6">
         <div class="card h-100"><div class="card-body d-flex align-items-center">
@@ -136,6 +131,77 @@
 
     <!-- STOCK -->
     <section id="page-stock" class="card mt-3 d-none">
+      <div class="card-body">
+        <div class="d-flex align-items-center mb-3 gap-2">
+          <h3 class="h5 me-auto mb-0">Magazzino</h3>
+          <input id="search" class="form-control" placeholder="Cerca Finis/Complete/Descrizione/Note" style="max-width:380px" />
+          <select id="filterOwner" class="form-select d-none" style="max-width:220px"></select>
+          <a id="quickUsers" href="#/users" class="btn btn-outline-light d-none"><i class="bi bi-people me-1"></i>Gestisci utenti</a>
+        </div>
+
+        <div class="mb-3">
+          <div class="row g-2">
+            <div class="col-lg-2"><input id="newFinis" class="form-control" placeholder="Finis Code" /></div>
+            <div class="col-lg-2"><input id="newComplete" class="form-control" placeholder="Complete Code" /></div>
+            <div class="col-lg-3"><input id="newDesc" class="form-control" placeholder="Descrizione" /></div>
+            <div class="col-lg-3"><input id="newNote" class="form-control" placeholder="Note" /></div>
+            <div class="col-lg-2 d-grid"><button id="btnAdd" class="btn btn-success" type="button"><i class="bi bi-plus-lg me-1"></i>Aggiungi</button></div>
+          </div>
+          <div class="muted small mt-1">I nuovi record saranno di: <span id="ownerHint">—</span></div>
+        </div>
+
+        <div class="table-responsive">
+          <table class="table table-dark table-striped align-middle">
+            <thead>
+              <tr>
+                <th>Finis</th>
+                <th>Complete</th>
+                <th>Descrizione</th>
+                <th>Note</th>
+                <th class="text-end">Qty</th>
+                <th class="text-end">Azioni</th>
+                <th id="thOwner" class="d-none">Dealer</th>
+              </tr>
+            </thead>
+            <tbody id="tbody"></tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- USERS (ADMIN) -->
+    <section id="page-users" class="card mt-3 d-none">
+      <div class="card-body">
+        <div class="d-flex align-items-center mb-3 gap-2">
+          <h3 class="h5 me-auto mb-0">Gestione Utenti</h3>
+          <input id="uSearch" class="form-control" placeholder="Cerca email" style="max-width:320px" />
+        </div>
+
+        <div class="row g-2 mb-3">
+          <div class="col-lg-4"><input id="uNewEmail" class="form-control" placeholder="email@dominio.it" /></div>
+          <div class="col-lg-3"><input id="uNewPassword" class="form-control" placeholder="password temporanea" /></div>
+          <div class="col-lg-3"><input id="uNewDealer" class="form-control" placeholder="Dealer (facoltativo)" /></div>
+          <div class="col-lg-2">
+            <div class="input-group">
+              <select id="uNewRole" class="form-select"><option value="user">User</option><option value="admin">Admin</option></select>
+              <button id="btnCreateUser" class="btn btn-success" type="button" title="Crea utente"><i class="bi bi-person-plus"></i></button>
+            </div>
+          </div>
+          <div id="uMsg" class="text-success small"></div>
+        </div>
+
+        <div class="table-responsive">
+          <table class="table table-dark table-striped align-middle">
+            <thead><tr><th>Email</th><th>Dealer</th><th>Ruolo</th><th>Stato</th><th class="text-end">Azioni</th></tr></thead>
+            <tbody id="uBody"></tbody>
+          </table>
+        </div>
+        <div class="muted small">Blocca/sblocca via Firestore; con Cloud Functions puoi anche cancellare da Authentication.</div>
+      </div>
+    </section>
+
+    <!-- STATS -->
+    <section id="page-stats" class="card mt-3 d-none">
       <div class="card-body">
         <div class="d-flex align-items-center mb-3 gap-2">
           <h3 class="h5 me-auto mb-0">Statistiche</h3>
@@ -185,7 +251,7 @@
 
     let fnSetDisabled, fnDeleteUser;
     try { fnSetDisabled = httpsCallable(fns, 'adminSetDisabled'); } catch(_){}
-    try { fnDeleteUser  = httpsCallable(fns, 'adminDeleteUser'); } catch(_){}
+    try { fnDeleteUser  = httpsCallable(fns, 'adminDeleteUser'); } catch(_){}}
 
     /* Stato */
     let currentUser = null; // { uid, email, role, dealer, disabled }
@@ -195,31 +261,30 @@
 
     const $  = s => document.querySelector(s);
     const $$ = s => document.querySelectorAll(s);
-    const esc = s => (s ?? '').toString().replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;','\'':'&#39;'}[m]));
+    const esc = s => (s ?? '').toString().replace(/[&<>"]|'/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;','\'':'&#39;'}[m]));
     const byEmail = e => (e||'').trim().toLowerCase();
 
     function showOnly(...ids){
-      ['page-auth','page-dash','page-stock','page-users','page-stats'].forEach(id=>$('#'+id).classList.add('d-none'));
-      ids.forEach(id=>$('#'+id).classList.remove('d-none'));
+      ['page-auth','page-dash','page-stock','page-users','page-stats'].forEach(id=>document.getElementById(id)?.classList.add('d-none'));
+      ids.forEach(id=>document.getElementById(id)?.classList.remove('d-none'));
       if(ids.includes('page-auth')) document.body.classList.add('auth-mode'); else document.body.classList.remove('auth-mode');
     }
     function setActive(hash){ $$('.nav-link').forEach(a=>a.classList.remove('active')); const l=document.querySelector(`.nav-link[href="${hash}"]`); if(l) l.classList.add('active'); }
     function renderNav(){
-      const info=$('#userInfo'), out=$('#btnLogout'), navUsers=$('#navUsers'), quick=$('#quickUsers');
+      const info=document.getElementById('userInfo'), out=document.getElementById('btnLogout'), navUsers=document.getElementById('navUsers'), quick=document.getElementById('quickUsers');
       const appbar=document.querySelector('header.appbar');
       if(!currentUser){
         showOnly('page-auth'); setActive(''); document.body.classList.remove('page-bg');
-        if(appbar) appbar.classList.add('d-none');
+        appbar?.classList.add('d-none');
         return;
       }
-      if(appbar) appbar.classList.remove('d-none');
-
+      appbar?.classList.remove('d-none');
       const dealerTxt = currentUser.dealer ? ` • ${currentUser.dealer}` : '';
       const badge = currentUser.disabled ? ' (bloccato)' : '';
-      info.textContent = `${currentUser.email} • ${currentUser.role}${dealerTxt}${badge}`;
-      info.classList.remove('d-none'); out.classList.remove('d-none');
+      if(info){ info.textContent = `${currentUser.email} • ${currentUser.role}${dealerTxt}${badge}`; info.classList.remove('d-none'); }
+      out?.classList.remove('d-none');
       const isAdmin=currentUser.role==='admin';
-      navUsers.classList.toggle('d-none', !isAdmin);
+      navUsers?.classList.toggle('d-none', !isAdmin);
       if(quick) quick.classList.toggle('d-none', !isAdmin);
     }
 
@@ -244,7 +309,6 @@
         renderUsers(); setActive('#/users');
         return;
       }
-      // default
       showOnly('page-dash','page-stock');
       document.body.classList.add('page-bg');
       renderStock(); setActive('#/stock');
@@ -274,7 +338,7 @@
     }
 
     function showLoginError(err){
-      const box = $('#authError');
+      const box = document.getElementById('authError');
       const map={
         'auth/invalid-email':'Email non valida.',
         'auth/missing-password':'Inserisci la password.',
@@ -290,8 +354,8 @@
     }
 
     async function doLogin(email, password){
-      const btn = $('#btnLogin'); const box = $('#authError');
-      box.classList.add('d-none'); box.textContent=''; btn.disabled=true;
+      const btn = document.getElementById('btnLogin'); const box = document.getElementById('authError');
+      box.classList.add('d-none'); box.textContent=''; if(btn) btn.disabled=true;
       try {
         const cred = await signInWithEmailAndPassword(auth, email, password);
         const prof = await ensureProfile(cred.user.uid, cred.user.email || email);
@@ -299,7 +363,7 @@
         currentUser = { uid: cred.user.uid, email: cred.user.email || email, role: prof.role, dealer: prof.dealer || '', disabled: !!prof.disabled };
         renderNav(); routeTo(location.hash || '#/stock'); await refreshAll();
       } catch(err){ console.error('LOGIN ERROR:', err.code, err.message); showLoginError(err); }
-      finally { btn.disabled=false; }
+      finally { if(btn) btn.disabled=false; }
     }
     async function doLogout(){ await signOut(auth); currentUser=null; renderNav(); showOnly('page-auth'); }
 
@@ -328,10 +392,10 @@
     }
 
     async function addItem(){
-      const finis   = $('#newFinis').value.trim();
-      const complete= $('#newComplete').value.trim();
-      const desc    = $('#newDesc').value.trim();
-      const note    = $('#newNote').value.trim();
+      const finis   = document.getElementById('newFinis').value.trim();
+      const complete= document.getElementById('newComplete').value.trim();
+      const desc    = document.getElementById('newDesc').value.trim();
+      const note    = document.getElementById('newNote').value.trim();
       if(!finis && !complete){ alert('Inserisci almeno Finis o Complete'); return; }
       const key = makeKey(finis, complete);
       try{
@@ -339,7 +403,7 @@
         const snap = await getDoc(ref);
         if(snap.exists()){ alert('Hai già un record con lo stesso Finis e Complete.'); return; }
         await setDoc(ref, { key, ownerUid: currentUser.uid, ownerEmail: currentUser.email, finis, complete, desc, note, qty: 0, createdAt: serverTimestamp() });
-        ['#newFinis','#newComplete','#newDesc','#newNote'].forEach(s=>$(s).value='');
+        ['newFinis','newComplete','newDesc','newNote'].forEach(id=>{ const el=document.getElementById(id); if(el) el.value=''; });
         await fetchItems();
       }catch(err){ console.error('ADD ITEM ERROR:', err.code, err.message); alert(`Errore nel salvataggio: ${err.code || err.message}`); }
     }
@@ -375,6 +439,7 @@
 
     /* Helpers filtri */
     function ownerOptions(selectEl){
+      if(!selectEl) return;
       if(currentUser.role!=='admin'){ selectEl.classList.add('d-none'); return; }
       const prev = selectEl.value;
       const owners=[...new Set(itemsCache.map(x=>byEmail(x.ownerEmail)).filter(Boolean))].sort();
@@ -395,15 +460,17 @@
     /* Render Stock */
     function renderStock(){
       if(!currentUser) return;
-      $('#ownerHint').textContent = currentUser.email;
-      ownerOptions($('#filterOwner'));
-      const list=visibleItems($('#search').value, $('#filterOwner').value);
+      const ownerHint=document.getElementById('ownerHint'); if(ownerHint) ownerHint.textContent = currentUser.email;
+      ownerOptions(document.getElementById('filterOwner'));
+      const list=visibleItems(document.getElementById('search')?.value, document.getElementById('filterOwner')?.value);
       const {totalItems,totalQty}=metrics(list);
-      $('#metricItems').textContent=totalItems; $('#metricQty').textContent=totalQty;
+      const mI=document.getElementById('metricItems'); if(mI) mI.textContent=totalItems;
+      const mQ=document.getElementById('metricQty'); if(mQ) mQ.textContent=totalQty;
 
-      const tbody=$('#tbody'); tbody.innerHTML='';
+      const tbody=document.getElementById('tbody'); if(!tbody) return; tbody.innerHTML='';
       for(const it of list){
         const tr=document.createElement('tr'); tr.dataset.id=it.id;
+        const dealerOrEmail = (profilesMap.get(it.ownerUid)?.dealer) || it.ownerEmail || '—';
         tr.innerHTML=`
           <td>${esc(it.finis)}</td>
           <td>${esc(it.complete)}</td>
@@ -418,18 +485,18 @@
               <button class="btn btn-sm btn-outline-danger" data-action="del" data-id="${it.id}"><i class="bi bi-trash"></i></button>
             </div>
           </td>
-          <td id="tdOwner" class="${currentUser.role==='admin'?'':'d-none'}">${esc((profilesMap.get(it.ownerUid)?.dealer)||it.ownerEmail)}</td>`;
+          <td id="tdOwner" class="${currentUser.role==='admin'?'':'d-none'}">${esc(dealerOrEmail)}</td>`;
         tbody.appendChild(tr);
       }
-      $('#thOwner').classList.toggle('d-none', currentUser.role!=='admin');
+      const th=document.getElementById('thOwner'); if(th) th.classList.toggle('d-none', currentUser.role!=='admin');
     }
 
     /* Render Users (admin) */
     async function renderUsers(){
       if(currentUser?.role!=='admin') return;
-      const q=$('#uSearch').value.trim().toLowerCase();
+      const q=document.getElementById('uSearch')?.value.trim().toLowerCase();
       const rows=(await fetchProfiles()).filter(p=>!q || (p.email||'').toLowerCase().includes(q));
-      const uBody=$('#uBody'); uBody.innerHTML='';
+      const uBody=document.getElementById('uBody'); if(!uBody) return; uBody.innerHTML='';
       for(const u of rows){
         const tr=document.createElement('tr'); tr.dataset.uid=u.id;
         const isDisabled = !!u.disabled;
@@ -459,193 +526,149 @@
     /* Render Stats */
     function renderStats(){
       if(!currentUser) return;
-      const sOwner=$('#sOwner'); ownerOptions(sOwner);
-      // build Finis list
+      const sOwner=document.getElementById('sOwner'); ownerOptions(sOwner);
+      // Finis select
       const finisSet=new Set(itemsCache.map(x=>x.finis).filter(Boolean));
-      const prevF=$('#sFinis').value || '__all__';
-      $('#sFinis').innerHTML = '<option value="__all__">Tutti i Finis</option>' + [...finisSet].sort().map(f=>`<option value="${esc(f)}">${esc(f)}</option>`).join('');
-      if([...$('#sFinis').options].some(o=>o.value===prevF)) $('#sFinis').value=prevF; else $('#sFinis').value='__all__';
+      const sFinis=document.getElementById('sFinis');
+      const prevF=sFinis?.value || '__all__';
+      if(sFinis) sFinis.innerHTML = '<option value="__all__">Tutti i Finis</option>' + [...finisSet].sort().map(f=>`<option value="${esc(f)}">${esc(f)}</option>`).join('');
+      if(sFinis && [...sFinis.options].some(o=>o.value===prevF)) sFinis.value=prevF; else if(sFinis) sFinis.value='__all__';
 
-      const list=visibleItems($('#sSearch').value, sOwner.value);
+      const list=visibleItems(document.getElementById('sSearch')?.value, sOwner?.value);
 
-      // --- Top codes + by owner (come prima) ---
+      // Top codes
       const mapCodes=new Map();
       for(const it of list){ const key=(it.complete||it.finis||'—'); mapCodes.set(key,(mapCodes.get(key)||0)+Number(it.qty||0)); }
-
       const top=[...mapCodes.entries()].sort((a,b)=>b[1]-a[1]).slice(0,12);
       const labelsTop=top.map(x=>x[0]); const dataTop=top.map(x=>x[1]);
 
+      // By owner
       const mapOwner=new Map();
       for(const it of list){ const k=it.ownerEmail||'—'; mapOwner.set(k,(mapOwner.get(k)||0)+Number(it.qty||0)); }
       const labelsOwn=[...mapOwner.keys()], dataOwn=[...mapOwner.values()];
 
-      if(chartTop) chartTop.destroy(); if(chartOwner) chartOwner.destroy();
-      chartTop=new Chart($('#chartTopCodes'),{type:'bar',data:{labels:labelsTop,datasets:[{label:'Qty',data:dataTop}]},options:{plugins:{legend:{display:false}}}});
-      chartOwner=new Chart($('#chartByOwner'),{type:'pie',data:{labels:labelsOwn,datasets:[{label:'Qty',data:dataOwn}]}});
+      // Time series (ultimi 12 mesi) opzionale su Finis
+      const chosenFinis = (document.getElementById('sFinis')?.value)||'__all__';
+      const filtered = list.filter(it=> chosenFinis==='__all__' ? true : (it.finis||'')===chosenFinis);
+      const now=new Date(); const months=[]; for(let i=11;i>=0;i--){ const d=new Date(now.getFullYear(), now.getMonth()-i, 1); const key=`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}`; months.push({d,key,label:`${String(d.getMonth()+1).padStart(2,'0')}/${d.getFullYear()}`}); }
+      const sums=new Map(months.map(m=>[m.key,0]));
+      for(const it of filtered){ const ts=it.createdAt?.toDate ? it.createdAt.toDate() : (it.createdAt instanceof Date ? it.createdAt : null); if(!ts) continue; const key=`${ts.getFullYear()}-${String(ts.getMonth()+1).padStart(2,'0')}`; if(sums.has(key)) sums.set(key, sums.get(key)+Number(it.qty||0)); }
+      const labels=months.map(m=>m.label); const data=months.map(m=>sums.get(m.key)||0);
+
+      if(chartTop) chartTop.destroy(); if(chartOwner) chartOwner.destroy(); if(chartTime) chartTime.destroy();
+      chartTop=new Chart(document.getElementById('chartTopCodes'),{type:'bar',data:{labels:labelsTop,datasets:[{label:'Qty',data:dataTop}]},options:{plugins:{legend:{display:false}}}});
+      chartOwner=new Chart(document.getElementById('chartByOwner'),{type:'pie',data:{labels:labelsOwn,datasets:[{label:'Qty',data:dataOwn}]}});
+      chartTime=new Chart(document.getElementById('chartQtyTime'),{type:'line',data:{labels,datasets:[{label:'Qty per mese',data, fill:false, tension:.2}]}, options:{plugins:{legend:{display:true}}, scales:{y:{beginAtZero:true}}}});
     }
 
     /* Event wiring */
-    // login
-    const _btnLogin = document.getElementById('btnLogin');
-    if(_btnLogin){ _btnLogin.addEventListener('click',()=>doLogin($('#email').value.trim(), $('#password').value)); }
-    const onEnter=(e)=>{ if(e.key==='Enter') _btnLogin && _btnLogin.click(); };
-    const _email=document.getElementById('email'); if(_email) _email.addEventListener('keydown',onEnter);
-    const _pwd=document.getElementById('password'); if(_pwd) _pwd.addEventListener('keydown',onEnter); };
-    $('#email').addEventListener('keydown',onEnter); $('#password').addEventListener('keydown',onEnter);
-    $('#btnLogout').addEventListener('click',doLogout);
+    function bindEvents(){
+      // Login
+      const btnLogin = document.getElementById('btnLogin');
+      if (btnLogin) btnLogin.addEventListener('click', () => doLogin(document.getElementById('email').value.trim(), document.getElementById('password').value));
+      const onEnter = e => { if (e.key === 'Enter') btnLogin?.click(); };
+      document.getElementById('email')?.addEventListener('keydown', onEnter);
+      document.getElementById('password')?.addEventListener('keydown', onEnter);
+      document.getElementById('btnLogout')?.addEventListener('click', doLogout);
 
-    // stock (bind solo se gli elementi esistono)
-    const _search=document.getElementById('search'); if(_search) _search.addEventListener('input',renderStock);
-    const _fOwner=document.getElementById('filterOwner'); if(_fOwner) _fOwner.addEventListener('change',renderStock);
-    const _btnAdd=document.getElementById('btnAdd'); if(_btnAdd) _btnAdd.addEventListener('click',addItem);
-    const _tbody=document.getElementById('tbody');
-    if(_tbody){
-      _tbody.addEventListener('click',e=>{
-        const b=e.target.closest('button[data-action]'); if(!b) return;
-        const tr=b.closest('tr'); const id=b.dataset.id||tr?.dataset?.id;
-        let v=Number(tr.querySelector('[data-qty]')?.value||1); if(!Number.isFinite(v)||v<1) v=1;
-        if(b.dataset.action==='in')  moveItem(id,+v);
-        if(b.dataset.action==='out') moveItem(id,-v);
-        if(b.dataset.action==='del') deleteItem(id);
-      });
-    } if(!b) return;
-      const tr=b.closest('tr'); const id=b.dataset.id||tr?.dataset?.id;
-      let v=Number(tr.querySelector('[data-qty]')?.value||1); if(!Number.isFinite(v)||v<1) v=1;
-      if(b.dataset.action==='in')  moveItem(id,+v);
-      if(b.dataset.action==='out') moveItem(id,-v);
-      if(b.dataset.action==='del') deleteItem(id);
-    });
-
-    // users admin (bind se presenti)
-    const _btnCreate=document.getElementById('btnCreateUser');
-    if(_btnCreate){
-      _btnCreate.addEventListener('click', async ()=>{
-        if(currentUser?.role!=='admin') return;
-        const email=$('#uNewEmail').value.trim();
-        const pass=$('#uNewPassword').value.trim();
-        const role=$('#uNewRole').value; const dealer=$('#uNewDealer').value.trim();
-        const msgEl=$('#uMsg'); msgEl.textContent='';
-        if(!email||!pass){ msgEl.textContent='Email e password sono obbligatorie.'; return; }
-        try{
-          const secondary = initializeApp(firebaseConfig, 'secondary');
-          const secondaryAuth = getAuth(secondary);
-          const cred = await createUserWithEmailAndPassword(secondaryAuth, email, pass);
-          await setDoc(doc(db,'profiles',cred.user.uid), { email, role, dealer: dealer || '', disabled: false, createdAt: serverTimestamp() });
-          msgEl.textContent=`Utente creato: ${email}`;
-          await deleteApp(getApp('secondary'));
-        }catch(err){ console.error('CREATE USER ERROR:', err.code, err.message); msgEl.textContent=`Errore creazione: ${err.code}`; }
-        finally{
-          ['uNewEmail','uNewPassword','uNewDealer'].forEach(id=>{ const el=document.getElementById(id); if(el) el.value=''; });
-          const roleSel=document.getElementById('uNewRole'); if(roleSel) roleSel.value='user'; await renderUsers();
-        }
-      });
-    }
-      const pass=$('#uNewPassword').value.trim();
-      const role=$('#uNewRole').value; const dealer=$('#uNewDealer').value.trim();
-      const msgEl=$('#uMsg'); msgEl.textContent='';
-      if(!email||!pass){ msgEl.textContent='Email e password sono obbligatorie.'; return; }
-      try{
-        const secondary = initializeApp(firebaseConfig, 'secondary');
-        const secondaryAuth = getAuth(secondary);
-        const cred = await createUserWithEmailAndPassword(secondaryAuth, email, pass);
-        await setDoc(doc(db,'profiles',cred.user.uid), { email, role, dealer: dealer || '', disabled: false, createdAt: serverTimestamp() });
-        msgEl.textContent=`Utente creato: ${email}`;
-        await deleteApp(getApp('secondary'));
-      }catch(err){ console.error('CREATE USER ERROR:', err.code, err.message); msgEl.textContent=`Errore creazione: ${err.code}`; }
-      finally{
-        ['uNewEmail','uNewPassword','uNewDealer'].forEach(id=>document.getElementById(id).value='');
-        $('#uNewRole').value='user'; await renderUsers();
+      // Stock
+      document.getElementById('search')?.addEventListener('input', renderStock);
+      document.getElementById('filterOwner')?.addEventListener('change', renderStock);
+      document.getElementById('btnAdd')?.addEventListener('click', addItem);
+      const tbody = document.getElementById('tbody');
+      if (tbody) {
+        tbody.addEventListener('click', e => {
+          const b = e.target.closest('button[data-action]'); if (!b) return;
+          const tr = b.closest('tr'); const id = b.dataset.id || tr?.dataset?.id;
+          let v = parseInt(tr.querySelector('[data-qty]')?.value || '1', 10);
+          if (!Number.isFinite(v) || v < 1) v = 1;
+          if (b.dataset.action === 'in')  moveItem(id, +v);
+          if (b.dataset.action === 'out') moveItem(id, -v);
+          if (b.dataset.action === 'del') deleteItem(id);
+        });
       }
-    });
 
-    const _uBody=document.getElementById('uBody');
-    if(_uBody){
-      _uBody.addEventListener('change', async (e)=>{
-        const sel=e.target.closest('select[data-urole]');
-        if(sel){ await setUserRole(sel.getAttribute('data-urole'), sel.value); return; }
-        const chk=e.target.closest('input[data-udisabled]');
-        if(chk){
-          const uid=chk.getAttribute('data-udisabled');
-          try{
-            await updateDoc(doc(db,'profiles',uid), { disabled: chk.checked });
-            try{ if(fnSetDisabled) await fnSetDisabled({ uid, disabled: chk.checked }); }catch(_){/* opzionale */}
-            const row=chk.closest('tr'); row.querySelector('.form-check-label').textContent = chk.checked ? 'Bloccato' : 'Attivo';
-            const delBtn=row.querySelector('button[data-action="deleteUser"]'); if(delBtn){ delBtn.disabled=!chk.checked; delBtn.title = chk.checked ? '' : 'Blocca prima di eliminare'; }
-          }catch(err){ console.error('DISABLE USER ERROR:', err.code, err.message); alert('Permesso negato nel cambiare stato.'); chk.checked=!chk.checked; }
-        }
-      });
-    }
-      if(sel){ await setUserRole(sel.getAttribute('data-urole'), sel.value); return; }
-      const chk=e.target.closest('input[data-udisabled]');
-      if(chk){
-        const uid=chk.getAttribute('data-udisabled');
-        try{
-          await updateDoc(doc(db,'profiles',uid), { disabled: chk.checked });
-          try{ if(fnSetDisabled) await fnSetDisabled({ uid, disabled: chk.checked }); }catch(_){/* opzionale */}
-          const row=chk.closest('tr'); row.querySelector('.form-check-label').textContent = chk.checked ? 'Bloccato' : 'Attivo';
-          const delBtn=row.querySelector('button[data-action="deleteUser"]'); if(delBtn){ delBtn.disabled=!chk.checked; delBtn.title = chk.checked ? '' : 'Blocca prima di eliminare'; }
-        }catch(err){ console.error('DISABLE USER ERROR:', err.code, err.message); alert('Permesso negato nel cambiare stato.'); chk.checked=!chk.checked; }
-      }
-    });
-
-    if(_uBody){
-      _uBody.addEventListener('input', async (e)=>{
-        const inp=e.target.closest('input[data-udealer]'); if(!inp) return; const uid=inp.getAttribute('data-udealer');
-        clearTimeout(inp._t);
-        inp._t=setTimeout(async()=>{ try{ await updateDoc(doc(db,'profiles',uid), { dealer: inp.value.trim() }); }catch(err){ console.error('UPDATE DEALER ERROR:', err.code, err.message); alert('Impossibile aggiornare Dealer.'); } },400);
-      });
-    } if(!inp) return; const uid=inp.getAttribute('data-udealer');
-      clearTimeout(inp._t);
-      inp._t=setTimeout(async()=>{ try{ await updateDoc(doc(db,'profiles',uid), { dealer: inp.value.trim() }); }catch(err){ console.error('UPDATE DEALER ERROR:', err.code, err.message); alert('Impossibile aggiornare Dealer.'); } },400);
-    });
-
-    if(_uBody){
-      _uBody.addEventListener('click', async (e)=>{
-        const b=e.target.closest('button[data-action]'); if(!b) return;
-        if (b.dataset.action==='pwreset'){
-          const email=b.getAttribute('data-email');
-          try{ await sendPasswordResetEmail(auth, email); alert(`Email inviata a: ${email}`); }
-          catch(err){ console.error('PW RESET ERROR:', err.code, err.message); alert(`Errore invio email: ${err.code}`); }
-          return;
-        }
-        if (b.dataset.action==='deleteUser'){
-          const uid=b.getAttribute('data-uid');
-          if(!confirm('Eliminare definitivamente questa utenza?')) return;
-          try{
-            try{ if(fnDeleteUser) await fnDeleteUser({ uid }); }catch(_){ }
-            await deleteDoc(doc(db,'profiles',uid));
+      // Users (admin)
+      const btnCreate = document.getElementById('btnCreateUser');
+      if (btnCreate) {
+        btnCreate.addEventListener('click', async () => {
+          if (currentUser?.role !== 'admin') return;
+          const email  = document.getElementById('uNewEmail').value.trim();
+          const pass   = document.getElementById('uNewPassword').value.trim();
+          const role   = document.getElementById('uNewRole').value;
+          const dealer = document.getElementById('uNewDealer').value.trim();
+          const msgEl  = document.getElementById('uMsg'); msgEl.textContent = '';
+          if (!email || !pass) { msgEl.textContent = 'Email e password sono obbligatorie.'; return; }
+          try {
+            const secondary = initializeApp(firebaseConfig, 'secondary');
+            const secondaryAuth = getAuth(secondary);
+            const cred = await createUserWithEmailAndPassword(secondaryAuth, email, pass);
+            await setDoc(doc(db,'profiles',cred.user.uid), { email, role, dealer: dealer||'', disabled:false, createdAt: serverTimestamp() });
+            msgEl.textContent = `Utente creato: ${email}`;
+          } catch (err) {
+            console.error(err); msgEl.textContent = `Errore creazione: ${err.code}`;
+          } finally {
+            try { await deleteApp(getApp('secondary')); } catch(_) {}
+            ['uNewEmail','uNewPassword','uNewDealer'].forEach(id => { const el = document.getElementById(id); if (el) el.value=''; });
+            const r = document.getElementById('uNewRole'); if (r) r.value='user';
             await renderUsers();
-            alert('Utenza eliminata (profilo). Se hai la Cloud Function, è stata rimossa anche da Authentication.');
-          }catch(err){ console.error('DELETE AUTH USER ERROR:', err); alert(`Errore eliminazione utente: ${err.message || err}`); }
-        }
-      });
-    } if(!b) return;
-      if (b.dataset.action==='pwreset'){
-        const email=b.getAttribute('data-email');
-        try{ await sendPasswordResetEmail(auth, email); alert(`Email inviata a: ${email}`); }
-        catch(err){ console.error('PW RESET ERROR:', err.code, err.message); alert(`Errore invio email: ${err.code}`); }
-        return;
+          }
+        });
       }
-      if (b.dataset.action==='deleteUser'){
-        const uid=b.getAttribute('data-uid');
-        if(!confirm('Eliminare definitivamente questa utenza?')) return;
-        try{
-          try{ if(fnDeleteUser) await fnDeleteUser({ uid }); }catch(_){ }
-          await deleteDoc(doc(db,'profiles',uid));
-          await renderUsers();
-          alert('Utenza eliminata (profilo). Se hai la Cloud Function, è stata rimossa anche da Authentication.');
-        }catch(err){ console.error('DELETE AUTH USER ERROR:', err); alert(`Errore eliminazione utente: ${err.message || err}`); }
-      }
-    });
 
-    // stats
-    $('#sApply').addEventListener('click', renderStats);
-    $('#sFinis').addEventListener('change', renderStats);
+      const uBody = document.getElementById('uBody');
+      if (uBody) {
+        uBody.addEventListener('change', async e => {
+          const sel = e.target.closest('select[data-urole]');
+          if (sel) { await setUserRole(sel.dataset.urole, sel.value); return; }
+          const chk = e.target.closest('input[data-udisabled]');
+          if (chk) {
+            const uid = chk.dataset.udisabled;
+            try {
+              await updateDoc(doc(db,'profiles',uid), { disabled: chk.checked });
+              try { if (fnSetDisabled) await fnSetDisabled({ uid, disabled: chk.checked }); } catch(_) {}
+              const row = chk.closest('tr'); row.querySelector('.form-check-label').textContent = chk.checked ? 'Bloccato' : 'Attivo';
+              const delBtn=row.querySelector('button[data-action="deleteUser"]'); if(delBtn){ delBtn.disabled=!chk.checked; delBtn.title = chk.checked ? '' : 'Blocca prima di eliminare'; }
+            } catch (err) { console.error(err); alert('Permesso negato'); chk.checked = !chk.checked; }
+          }
+        });
+        uBody.addEventListener('input', async e => {
+          const inp = e.target.closest('input[data-udealer]'); if (!inp) return;
+          const uid = inp.dataset.udealer; clearTimeout(inp._t);
+          inp._t = setTimeout(async () => {
+            try { await updateDoc(doc(db,'profiles',uid), { dealer: inp.value.trim() }); }
+            catch (err) { console.error(err); alert('Impossibile aggiornare Dealer'); }
+          }, 400);
+        });
+        uBody.addEventListener('click', async e => {
+          const b = e.target.closest('button[data-action]'); if (!b) return;
+          if (b.dataset.action === 'pwreset') {
+            const email = b.dataset.email;
+            try { await sendPasswordResetEmail(auth, email); alert(`Email inviata a: ${email}`); }
+            catch (err) { console.error(err); alert(`Errore: ${err.code}`); }
+            return;
+          }
+          if (b.dataset.action === 'deleteUser') {
+            const uid = b.dataset.uid; if (!confirm('Eliminare definitivamente questa utenza?')) return;
+            try {
+              try { if (fnDeleteUser) await fnDeleteUser({ uid }); } catch (_) {}
+              await deleteDoc(doc(db,'profiles',uid)); await renderUsers();
+              alert('Utenza eliminata.');
+            } catch (err) { console.error(err); alert(`Errore: ${err.message||err}`); }
+          }
+        });
+      }
+
+      // Stats
+      document.getElementById('sApply')?.addEventListener('click', renderStats);
+      document.getElementById('sFinis')?.addEventListener('change', renderStats);
+    }
 
     async function fetchProfilesIntoMap(){ const ps = await getDocs(collection(db,'profiles')); profilesMap = new Map(ps.docs.map(d=>[d.id, d.data()])); }
     async function refreshAll(){ await fetchItems(); if(currentUser?.role==='admin') await fetchProfilesIntoMap(); renderStats(); }
 
-    // avvio
+    // Start
+    bindEvents();
     showOnly('page-auth');
   </script>
 </body>
