@@ -301,9 +301,10 @@
     // chiave univoca PER OWNER
 function makeKey(finis, complete){
   const f = (finis || '').trim().toLowerCase();
-  const c = (complete || '').trim().toLowerCase();   // ← tolta la parentesi in più
+  const c = (complete || '').trim().toLowerCase(); // <-- corretto
   return `${currentUser.uid}__${f}__${c}`;
 }
+
 
 
     /* Auth + profili */
@@ -618,4 +619,5 @@ function makeKey(finis, complete){
   </script>
 </body>
 </html>
+
 
