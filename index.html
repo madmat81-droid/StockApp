@@ -420,22 +420,32 @@
       renderStock(); renderStats();
     }
 
-    async function addItem(){
-      const finis   = document.getElementById('newFinis').value.trim();
-      const complete= document.getElementById('newComplete').value.trim();
-      const desc    = document.getElementById('newDesc').value.trim();
-      const note    = document.getElementById('newNote').value.trim();
-      if(!finis && !complete){ alert('Inserisci almeno Finis o Complete'); return; }
-      const key = makeKey(finis, complete);
-      try{
-        const ref = doc(db, 'items', key);
-        const snap = await getDoc(ref);
-        if(snap.exists()){ alert('Hai già un record con lo stesso Finis e Complete.'); return; }
-        await setDoc(ref, { key, ownerUid: currentUser.uid, ownerEmail: currentUser.email, finis, complete, desc, note, qty: 0, createdAt: serverTimestamp() });
-        ['newFinis','newComplete','newDesc','newNote'].forEach(id=>{ const el=document.getElementById(id); if(el) el.value=''; });
-        await fetchItems();
-      }catch(err){ console.error('ADD ITEM ERROR:', err.code, err.message); alert(`Errore nel salvataggio: ${err.code || err.message}`); }
-    }
+async function addItem(){
+  const finis    = document.getElementById('newFinis').value.trim();
+  const complete = document.getElementById('newComplete').value.trim();
+  const desc     = document.getElementById('newDesc').value.trim();
+  const note     = document.getElementById('newNote').value.trim();
+  if(!finis && !complete){ alert('Inserisci almeno Finis o Complete'); return; }
+
+  // check duplicato locale (niente getDoc su Firestore)
+  const f = (finis||'').toLowerCase(), c = (complete||'').toLowerCase();
+  const dup = itemsCache.some(it =>
+    it.ownerUid === currentUser.uid &&
+    (it.finis||'').toLowerCase() === f &&
+    (it.complete||'').toLowerCase() === c
+  );
+  if (dup) { alert('Hai già un record con lo stesso Finis e Complete.'); return; }
+
+  const key = `${currentUser.uid}__${f}__${c}`;
+  await setDoc(doc(db,'items',key), {
+    key, ownerUid: currentUser.uid, ownerEmail: currentUser.email,
+    finis, complete, desc, note, qty: 0, createdAt: serverTimestamp()
+  });
+
+  ['newFinis','newComplete','newDesc','newNote'].forEach(id => { const el=document.getElementById(id); if(el) el.value=''; });
+  await fetchItems();
+}
+
 
     async function moveItem(id, delta){
       const ref = doc(db,'items',id);
