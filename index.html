@@ -9,32 +9,53 @@
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.3/dist/chart.umd.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
   <style>
-    :root{--bg:#0a0c10;--panel:#131622;--muted:#9aa3af;--border:#1f2330;--primary:#3b82f6;--accent:#10b981;--ford:#003DA5}
-    body{background:var(--bg);color:#e8eaee;margin:0;padding:0;overflow-x:hidden}
+    :root{
+      --bg:#f5f7fb;            /* background generale chiaro */
+      --panel:#ffffff;         /* card/pannelli */
+      --muted:#6b7280;         /* testo attenuato */
+      --border:#e5e7eb;        /* bordi leggeri */
+      --primary:#0a4fb8;       /* azzurro pulsanti secondari */
+      --accent:#10b981;        /* verde conferma */
+      --ford:#003DA5;          /* blu Ford (brand) */
+    }
+
+    /* ===== Base ===== */
+    body{background:var(--bg);color:#0b1220;margin:0;padding:0;overflow-x:hidden}
 
     /* ===== AppBar ===== */
-    header.appbar{background:var(--ford); color:#fff; box-shadow:0 6px 24px rgba(0,0,0,.25)}
+    header.appbar{background:var(--ford); color:#fff; box-shadow:0 6px 24px rgba(0,0,0,.12)}
     header.appbar .bar-inner{display:flex;align-items:center;gap:16px;min-height:90px;padding:14px 18px}
     header.appbar .brand{display:flex;align-items:center;gap:14px;font-weight:900;font-size:clamp(24px,2.8vw,36px);letter-spacing:.4px}
     header.appbar .brand img{height:42px;width:auto;display:block}
     header.appbar .nav-actions{display:flex;gap:10px;margin-left:auto}
-    .btn-header{--bs-btn-bg:#0a4fb8;--bs-btn-border-color:#0a4fb8;--bs-btn-hover-bg:#083f92;--bs-btn-hover-border-color:#083f92;--bs-btn-color:#fff}
-    .btn-header-outline{--bs-btn-color:#fff;--bs-btn-border-color:#cfe3ff;--bs-btn-hover-bg:#0a4fb8;--bs-btn-hover-border-color:#cfe3ff}
+    .btn-header{
+      --bs-btn-bg:#0a4fb8;--bs-btn-border-color:#0a4fb8;--bs-btn-hover-bg:#083f92;
+      --bs-btn-hover-border-color:#083f92;--bs-btn-color:#fff
+    }
+    .btn-header-outline{
+      --bs-btn-color:#fff;--bs-btn-border-color:#cfe3ff;
+      --bs-btn-hover-bg:#0a4fb8;--bs-btn-hover-border-color:#cfe3ff
+    }
     a.nav-link{color:#fff;text-decoration:none}
     a.nav-link.active{filter:brightness(1.1)}
 
     /* ===== Cards / Inputs ===== */
-    .card{background:var(--panel);border:1px solid var(--border);border-radius:16px}
-    .form-control,.form-select{background:#0e1220;color:#e8eaee;border-color:#1e2432}
-    .form-control:focus{box-shadow:none;border-color:var(--primary)}
+    .card{background:var(--panel);border:1px solid var(--border);border-radius:16px; box-shadow:0 6px 20px rgba(17,24,39,.06)}
+    .form-control,.form-select{background:#ffffff;color:#0b1220;border-color:#cbd5e1}
+    .form-control::placeholder{color:#94a3b8}
+    .form-control:focus,.form-select:focus{box-shadow:0 0 0 .25rem rgba(0,61,165,.12);border-color:var(--ford)}
     .btn-primary{background:var(--ford);border-color:var(--ford)}
     .btn-success{background:var(--accent);border-color:var(--accent)}
-    .table-dark{--bs-table-bg:#111425;--bs-table-striped-bg:#0e1120}
-    .badge-role{background:#1c2231}
+    /* rendiamo le outline-light leggibili in tema chiaro */
+    .btn-outline-light{
+      --bs-btn-color:#1f2937;--bs-btn-border-color:#cbd5e1;
+      --bs-btn-hover-bg:#e5e7eb;--bs-btn-hover-border-color:#cbd5e1
+    }
+    .badge-role{background:#eef2ff;color:#1e3a8a}
     .muted{color:var(--muted)}
 
     /* ===== Login split full-viewport ===== */
-    body.auth-mode{background:#000}
+    body.auth-mode{background:#f3f6fb}
     body.auth-mode header.appbar{display:none!important}
     body.auth-mode main.container{padding:0!important;max-width:100%!important}
     #page-auth{padding:0;margin:0;min-height:100vh;width:100vw;margin-left:calc(50% - 50vw);margin-right:calc(50% - 50vw)}
@@ -47,17 +68,41 @@
     .login-left .card{background:#ffffff;color:#0b1220}
     .login-left .form-control{background:#ffffff;color:#0b1220;border-color:#d8dee9}
     .login-left .form-control:focus{border-color:var(--ford);box-shadow:0 0 0 .25rem rgba(0,61,165,.15)}
-    .login-right{background:radial-gradient(ellipse at 20% 10%, rgba(0,0,0,.35), rgba(0,0,0,.65)), url('assets/bg.jpg') center/cover no-repeat}
+    .login-right{
+      background:
+        radial-gradient(ellipse at 20% 10%, rgba(255,255,255,.0), rgba(255,255,255,.0)),
+        url('assets/bg.jpg') center/cover no-repeat
+    }
     @media (max-width:992px){.login-split{grid-template-columns:1fr}.login-right{min-height:40vh}}
 
     /* ===== Background pagine (Stock, Stats, Users) ===== */
     body.page-bg:not(.auth-mode){
       min-height:100vh;
       background:
-        radial-gradient(ellipse at 20% 10%, rgba(0,0,0,.35), rgba(0,0,0,.65)),
+        radial-gradient(ellipse at 20% 10%, rgba(255,255,255,.6), rgba(255,255,255,.2)),
         url('assets/Sfondo FT.png') center center / cover no-repeat;
     }
-    body.page-bg:not(.auth-mode) .card{ background:rgba(19,22,34,.92); }
+    body.page-bg:not(.auth-mode) .card{ background:#ffffff; }
+
+    /* ===== Tabelle: manteniamo .table-dark ma ricreiamo palette chiara ===== */
+    .table-dark{
+      --bs-table-bg:#ffffff;
+      --bs-table-striped-bg:#f8fafc;
+      --bs-table-striped-color:#0b1220;
+      --bs-table-color:#0b1220;
+      --bs-table-border-color:#e5e7eb;
+      color:#0b1220 !important;
+      border-color:var(--border) !important;
+    }
+    .table-dark thead th{
+      background:#eef2ff;         /* header leggero bluastro */
+      color:#0b1220;
+      border-bottom:1px solid #dbe3f3;
+    }
+
+    /* Celle azioni: input quantità più visibile su chiaro */
+    td .form-control.form-control-sm{background:#ffffff;color:#0b1220;border-color:#cbd5e1}
+    td .form-control.form-control-sm:focus{border-color:var(--ford);box-shadow:0 0 0 .15rem rgba(0,61,165,.15)}
   </style>
 </head>
 <body class="auth-mode">
@@ -420,32 +465,31 @@
       renderStock(); renderStats();
     }
 
-async function addItem(){
-  const finis    = document.getElementById('newFinis').value.trim();
-  const complete = document.getElementById('newComplete').value.trim();
-  const desc     = document.getElementById('newDesc').value.trim();
-  const note     = document.getElementById('newNote').value.trim();
-  if(!finis && !complete){ alert('Inserisci almeno Finis o Complete'); return; }
+    async function addItem(){
+      const finis    = document.getElementById('newFinis').value.trim();
+      const complete = document.getElementById('newComplete').value.trim();
+      const desc     = document.getElementById('newDesc').value.trim();
+      const note     = document.getElementById('newNote').value.trim();
+      if(!finis && !complete){ alert('Inserisci almeno Finis o Complete'); return; }
 
-  // check duplicato locale (niente getDoc su Firestore)
-  const f = (finis||'').toLowerCase(), c = (complete||'').toLowerCase();
-  const dup = itemsCache.some(it =>
-    it.ownerUid === currentUser.uid &&
-    (it.finis||'').toLowerCase() === f &&
-    (it.complete||'').toLowerCase() === c
-  );
-  if (dup) { alert('Hai già un record con lo stesso Finis e Complete.'); return; }
+      // check duplicato locale (niente getDoc su Firestore)
+      const f = (finis||'').toLowerCase(), c = (complete||'').toLowerCase();
+      const dup = itemsCache.some(it =>
+        it.ownerUid === currentUser.uid &&
+        (it.finis||'').toLowerCase() === f &&
+        (it.complete||'').toLowerCase() === c
+      );
+      if (dup) { alert('Hai già un record con lo stesso Finis e Complete.'); return; }
 
-  const key = `${currentUser.uid}__${f}__${c}`;
-  await setDoc(doc(db,'items',key), {
-    key, ownerUid: currentUser.uid, ownerEmail: currentUser.email,
-    finis, complete, desc, note, qty: 0, createdAt: serverTimestamp()
-  });
+      const key = `${currentUser.uid}__${f}__${c}`;
+      await setDoc(doc(db,'items',key), {
+        key, ownerUid: currentUser.uid, ownerEmail: currentUser.email,
+        finis, complete, desc, note, qty: 0, createdAt: serverTimestamp()
+      });
 
-  ['newFinis','newComplete','newDesc','newNote'].forEach(id => { const el=document.getElementById(id); if(el) el.value=''; });
-  await fetchItems();
-}
-
+      ['newFinis','newComplete','newDesc','newNote'].forEach(id => { const el=document.getElementById(id); if(el) el.value=''; });
+      await fetchItems();
+    }
 
     async function moveItem(id, delta){
       const ref = doc(db,'items',id);
@@ -596,7 +640,7 @@ async function addItem(){
 
       if(chartTop) chartTop.destroy(); if(chartOwner) chartOwner.destroy(); if(chartTime) chartTime.destroy();
       chartTop=new Chart(document.getElementById('chartTopCodes'),{type:'bar',data:{labels:labelsTop,datasets:[{label:'Qty',data:dataTop}]},options:{plugins:{legend:{display:false}}}});
-      chartOwner=new Chart(document.getElementById('chartByOwner'),{type:'pie',data:{labels:labelsOwn,datasets:[{label:'Qty',data:dataOwn}]}});
+      chartOwner=new Chart(document.getElementById('chartByOwner'),{type:'pie',data:{labels:labelsOwn,datasets:[{label:'Qty',data:dataOwn}]}}); 
       chartTime=new Chart(document.getElementById('chartQtyTime'),{type:'line',data:{labels,datasets:[{label:'Qty per mese',data, fill:false, tension:.2}]}, options:{plugins:{legend:{display:true}}, scales:{y:{beginAtZero:true}}}});
     }
 
